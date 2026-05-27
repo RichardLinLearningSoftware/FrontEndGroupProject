@@ -1,10 +1,11 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: "AIzaSyCyiWqrC_Ecyd_B_8eMvhbrOAs3R3dZuP4",
   authDomain: "socialmediaproject-4d298.firebaseapp.com",
   projectId: "socialmediaproject-4d298",

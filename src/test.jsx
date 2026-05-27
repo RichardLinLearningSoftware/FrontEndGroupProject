@@ -37,7 +37,7 @@ async function GetAllData() {
 }
 
 async function CreateData() {
-    await addDoc(collection(db, "testingStuff"), {
+    addDoc(collection(db, "testingStuff"), {
         name: "Los Angeles",
         state: "CA",
         country: "USA"
@@ -45,7 +45,7 @@ async function CreateData() {
 }
 
 async function  DeleteData() {
-    await deleteDoc(doc(db, "testingStuff", "Xpaq1O5dTmHrAzQuDXYQ"));
+    await deleteDoc(doc(db, "testingStuff", "test"));
 }
 
 export { GetAllData, GetSingleData, CreateData, DeleteData };
