@@ -1,4 +1,4 @@
-import { collection, doc, getDoc, getDocs, getFirestore, where, addDoc, deleteDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, getFirestore, where, addDoc, deleteDoc, updateDoc  } from "firebase/firestore";
 import { firebaseConfig, app, db } from "./firebase.js";
 /* 
 Check if a document exist
@@ -48,4 +48,8 @@ async function  DeleteData() {
     await deleteDoc(doc(db, "testingStuff", "test"));
 }
 
-export { GetAllData, GetSingleData, CreateData, DeleteData };
+async function UpdateData() {
+    await updateDoc(doc(db, "testingStuff", "nUiYdiWehBtvDxofm7pe"), { name: "wow", country: "cooler"});
+}
+
+export { GetAllData, GetSingleData, CreateData, DeleteData, UpdateData };

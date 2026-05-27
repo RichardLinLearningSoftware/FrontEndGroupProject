@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import './App.css'
-import { GetAllData, GetSingleData, CreateData, DeleteData } from './test.jsx'
+import { GetAllData, GetSingleData, CreateData, DeleteData, UpdateData } from './test.jsx'
 function App() {
   const [count, setCount] = useState(0)
 
@@ -14,6 +14,7 @@ function App() {
         <button onClick={GetSingleData}>Get a data</button>
         <button onClick={CreateData}>Create a data</button>
         <button onClick={DeleteData}>Delete a data</button>
+        <button onClick={UpdateData}>Update a data</button>
       </div>
     </>
   )
