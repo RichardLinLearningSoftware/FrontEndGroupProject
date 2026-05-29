@@ -49,7 +49,10 @@ async function  DeleteData() {
 }
 
 async function UpdateData() {
-    await updateDoc(doc(db, "testingStuff", "nUiYdiWehBtvDxofm7pe"), { name: "wow", country: "cooler"});
+    await updateDoc(doc(db, "testingStuff", "nUiYdiWehBtvDxofm7pe"), { 
+        name: "wow", 
+        country: "cooler"
+    });
 }
 
 export { GetAllData, GetSingleData, CreateData, DeleteData, UpdateData };
