@@ -45,7 +45,7 @@ async function CreateData() {
 }
 
 async function  DeleteData() {
-    await deleteDoc(doc(db, "testingStuff", "test"));
+    await deleteDoc(doc(db, "testingStuff", "x9mxYWDlEjximOYTTUJG"));
 }
 
 async function UpdateData() {
