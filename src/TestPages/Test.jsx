@@ -1,5 +1,5 @@
 import { collection, doc, getDoc, getDocs, getFirestore, where, addDoc, deleteDoc, updateDoc  } from "firebase/firestore";
-import { firebaseConfig, app, db } from "./firebase.js";
+import { firebaseConfig, app, db } from "../firebase.js";
 /* 
 Check if a document exist
 
