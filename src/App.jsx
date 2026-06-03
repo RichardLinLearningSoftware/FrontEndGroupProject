@@ -1,19 +1,18 @@
 import './App.css'
 import { useEffect, useState } from 'react';
 import { BrowserRouter,  Route, Routes, NavLink} from 'react-router';
-import { ContactPage, HomePage, TestPage } from './Pages/Pages';
+import { ContactPage, HomePage, TestPage, Register, Login } from './Pages/Pages';
 
 function App() {
-  function ClickCoin(coin) {
-    navigate(`/${coin.NAME}`);
-  }
 
   return (
     <BrowserRouter>
       <>
-        <nav>
+        <nav className='test-gap'>
           <NavLink to="/" end>Home</NavLink>
           <NavLink to="/contact" end>Contact</NavLink>
+          <NavLink to="/register" end>Register</NavLink>
+          <NavLink to="/login" end>Login</NavLink>
           <NavLink to={{
               pathname: "/testPage",
               search: "id=" + "test",
@@ -21,10 +20,11 @@ function App() {
         </nav>
 
         <Routes>
-
           <Route path="/" element={<HomePage/>}/>
           <Route path="contact" element={<ContactPage/>}/>
           <Route path="testPage" element={<TestPage/>}/>
+          <Route path="register" element={<Register/>}/>
+          <Route path="login" element={<Login/>}/>
         </Routes>
 
         <footer>
