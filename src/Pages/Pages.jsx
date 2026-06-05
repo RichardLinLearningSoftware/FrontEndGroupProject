@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { BrowserRouter,  Route, Routes, NavLink, useSearchParams} from 'react-router';
 import { onAuthStateChanged, signOut  } from "firebase/auth";
+import { GetAllData } from './Content.jsx';
 import { auth } from "../firebase.js";
 
 const user = auth.currentUser;
@@ -23,7 +24,10 @@ onAuthStateChanged(auth, (user) => {
 
 function HomePage(){
     return(
-        <h2>Home page</h2>
+        <>
+            <h2>Home page</h2>
+            <GetAllData/>
+        </>
     );
 }
 
