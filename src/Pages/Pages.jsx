@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { BrowserRouter,  Route, Routes, NavLink, useSearchParams} from 'react-router';
 import { onAuthStateChanged, signOut  } from "firebase/auth";
-import { GetAllData } from './Content.jsx';
+import { GetAllData, GetSingleData } from './Content.jsx';
 import { auth } from "../firebase.js";
 
 const user = auth.currentUser;
@@ -40,7 +40,7 @@ function ContactPage(){
 function TestPage(){
     const [param] = useSearchParams();
     return(
-        <h2>{param.get("id")}</h2>
+        <GetSingleData documentName = {param.get("id")}/>
     );
 }
 
