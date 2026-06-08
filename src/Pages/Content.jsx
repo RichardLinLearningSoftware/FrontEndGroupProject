@@ -21,7 +21,7 @@ function GetAllData() {
     <>
       {docs.map(doc => (
         <NavLink key={doc.id} className="test-container" to={{pathname: "/testPage", search: `id=${doc.id}`,}}>
-          <p>{doc.data.name || "No name"}</p>
+          <h2>{doc.data.name || "No name"}</h2>
           <p>{doc.id}</p>
           <p>{doc.data.desc || "No description"}</p>
         </NavLink>
@@ -30,14 +30,26 @@ function GetAllData() {
   );
 }
 
-async function GetSingleData() {
-  let collectionName = document.getElementById("getAllCollectionInput").value;
-  let documentName = document.getElementById("getAllDocumentInput").value;
-  const docSnap = await getDoc(doc(db, collectionName.trim(), documentName.trim()));
-  console.log("Collection name: ",collectionName);
-  console.log(documentName, "=>",docSnap.data());
-  console.log("Name: ",docSnap.data().name);
-  console.log("Description: ",docSnap.data().desc);
+function GetSingleData({ documentName }) {
+  const [data, setData] = useState(null);
+  useEffect(() => {
+    async function fetchData() {
+      const docSnap = await getDoc(doc(db, "TestCollection", documentName));
+      setData(docSnap);
+    }
+    fetchData();
+  }, [documentName]);
+  if (data) {
+    return (
+      <>
+        <div className="test-container">
+          <h2>{data.data().name || "No name"}</h2>
+          <p>{data.id}</p>
+          <p>{data.data().desc || "No Description"}</p>
+        </div>
+      </>
+    );
+  }
 }
 
-export { GetAllData }
+export { GetAllData, GetSingleData }

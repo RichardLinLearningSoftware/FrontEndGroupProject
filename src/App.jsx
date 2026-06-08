@@ -13,10 +13,6 @@ function App() {
           <NavLink to="/contact" end>Contact</NavLink>
           <NavLink to="/register" end>Register</NavLink>
           <NavLink to="/login" end>Login</NavLink>
-          <NavLink to={{
-              pathname: "/testPage",
-              search: "id=" + "test",
-          }} >Test</NavLink>
         </nav>
 
         <Routes>
@@ -25,7 +21,6 @@ function App() {
           <Route path="testPage" element={<TestPage/>}/>
           <Route path="register" element={<Register/>}/>
           <Route path="login" element={<Login/>}/>
-          <Route path="/test:id" element={<TestPage/>} />
         </Routes>
 
         <footer>
