@@ -6,4 +6,7 @@
 .test-container{
     padding: 10px;
     background-color: lightgray;
+    text-decoration: none;
+    color: black;
+    display: block;
 }

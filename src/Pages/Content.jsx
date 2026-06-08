@@ -1,5 +1,7 @@
 import { collection, doc, getDoc, getDocs, getFirestore, where, addDoc, deleteDoc, updateDoc  } from "firebase/firestore";
 import { firebaseConfig, app, db, auth } from "../firebase.js";
+import { BrowserRouter,  Route, Routes, NavLink} from 'react-router';
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from 'react';
 
 function GetAllData() {
@@ -18,10 +20,11 @@ function GetAllData() {
   return (
     <>
       {docs.map(doc => (
-        <div className="test-container" key={doc.id}>
-          <h2>{doc.data.name}</h2>
-          <p>Lorem ipsum</p>
-        </div>
+        <NavLink key={doc.id} className="test-container" to={{pathname: "/testPage", search: `id=${doc.id}`,}}>
+          <p>{doc.data.name || "No name"}</p>
+          <p>{doc.id}</p>
+          <p>{doc.data.desc || "No description"}</p>
+        </NavLink>
       ))}
     </>
   );
