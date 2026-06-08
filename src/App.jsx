@@ -2,8 +2,11 @@ import './App.css'
 import { useEffect, useState } from 'react';
 import { BrowserRouter,  Route, Routes, NavLink} from 'react-router';
 import { ContactPage, HomePage, TestPage, Register, Login } from './Pages/Pages';
+import { onAuthStateChanged, signOut  } from "firebase/auth";
+import { auth } from "./firebase.js";
 
 function App() {
+  const user = auth.currentUser;
 
   return (
     <BrowserRouter>

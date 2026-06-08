@@ -6,7 +6,6 @@ import { GetAllData, GetSingleData } from './Content.jsx';
 import { auth } from "../firebase.js";
 
 const user = auth.currentUser;
-
 onAuthStateChanged(auth, (user) => {
   if (user) {
     // User is signed in, see docs for a list of available properties
