@@ -21,7 +21,7 @@ function App() {
           <NavLink to="/" end>Home</NavLink>
           <NavLink to="/contact" end>Contact</NavLink>
           {!user && <NavLink to="/register" end>Register</NavLink>}
-          <NavLink to="/login" end>{user ? "Login" : "Logout"}</NavLink>
+          <NavLink to="/login" end>{user ? "Logout" : "Login"}</NavLink>
         </nav>
 
         <Routes>
