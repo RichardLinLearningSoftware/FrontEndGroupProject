@@ -8,24 +8,20 @@ function GetAllData() {
   const [docs, setDocs] = useState([]);
   useEffect(() => {
     async function fetchData() {
-        const querySnapshot = await getDocs(collection(db, "TestCollection"));
-        const data = querySnapshot.docs.map(doc => ({
-            id: doc.id,
-            data: doc.data()
-        }));
-        setDocs(data);
+      const querySnapshot = await getDocs(collection(db, "TestCollection"));
+      setDocs(querySnapshot.docs);
     }
     fetchData();
   },[]);
   return (
     <>
-      {docs.map(doc => (
+      {docs.map(doc => 
         <NavLink key={doc.id} className="test-container" to={{pathname: "/testPage", search: `id=${doc.id}`,}}>
-          <h2>{doc.data.name || "No name"}</h2>
+          <h2>{doc.data().name || "No name"}</h2>
           <p>{doc.id}</p>
-          <p>{doc.data.desc || "No description"}</p>
+          <p>{doc.data().desc || "No description"}</p>
         </NavLink>
-      ))}
+      )}
     </>
   );
 }
