@@ -6,7 +6,6 @@ import { onAuthStateChanged, signOut  } from "firebase/auth";
 import { auth } from "./firebase.js";
 
 function App() {
-  const user = auth.currentUser;
 
   return (
     <BrowserRouter>
