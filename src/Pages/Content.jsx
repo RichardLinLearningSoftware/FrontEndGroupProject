@@ -27,7 +27,7 @@ function GetAllData() {
 }
 
 function GetSingleData({ documentName }) {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState();
   useEffect(() => {
     async function fetchData() {
       const docSnap = await getDoc(doc(db, "TestCollection", documentName));

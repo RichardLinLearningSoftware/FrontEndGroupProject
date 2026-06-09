@@ -6,6 +6,13 @@ import { onAuthStateChanged, signOut  } from "firebase/auth";
 import { auth } from "./firebase.js";
 
 function App() {
+  const [user, setUser] = useState(null);
+  const authUser = auth.currentUser;
+  useEffect(() => {
+    onAuthStateChanged(auth, (authUser) => {
+      setUser(authUser);
+    });
+  }, []);
 
   return (
     <BrowserRouter>
@@ -13,8 +20,8 @@ function App() {
         <nav className='test-gap'>
           <NavLink to="/" end>Home</NavLink>
           <NavLink to="/contact" end>Contact</NavLink>
-          <NavLink to="/register" end>Register</NavLink>
-          <NavLink to="/login" end>Login</NavLink>
+          {!user && <NavLink to="/register" end>Register</NavLink>}
+          <NavLink to="/login" end>{user ? "Login" : "Logout"}</NavLink>
         </nav>
 
         <Routes>

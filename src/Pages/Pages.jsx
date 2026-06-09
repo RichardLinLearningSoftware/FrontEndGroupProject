@@ -5,22 +5,6 @@ import { onAuthStateChanged, signOut  } from "firebase/auth";
 import { GetAllData, GetSingleData } from './Content.jsx';
 import { auth } from "../firebase.js";
 
-const user = auth.currentUser;
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    // User is signed in, see docs for a list of available properties
-    // https://firebase.google.com/docs/reference/js/auth.user
-    const uid = user.uid;
-    console.log("is logged in");
-    console.log(user.email);
-    // ...
-  } else {
-    console.log("not logged in");
-    // User is signed out
-    // ...
-  }
-});
-
 function HomePage(){
     return(
         <>
@@ -71,6 +55,14 @@ function Register(){
 }
 
 function Login(){
+    const [user, setUser] = useState(null);
+    const authUser = auth.currentUser;
+    useEffect(() => {
+        onAuthStateChanged(auth, (authUser) => {
+            setUser(authUser);
+        });
+    }, []);
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
@@ -87,13 +79,16 @@ function Login(){
     
     return (
         <>
-            <h2>Login</h2>
-            <form onSubmit={LoginUser}>
-                <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email"/>
-                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="password"/>
-                <button type="submit">Submit</button>
-            </form>
-            <button onClick={()=>signOut(auth)}>Logout</button>
+            <h2>{user ? "Logout" : "Login"}</h2>
+            {user ?
+                <button onClick={()=>signOut(auth)}>Logout</button>
+            :
+                <form onSubmit={LoginUser}>
+                    <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email"/>
+                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="password"/>
+                    <button type="submit">Submit</button>
+                </form>
+            }
         </>
     );
 }
