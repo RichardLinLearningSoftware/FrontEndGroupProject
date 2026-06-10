@@ -1,6 +1,7 @@
 import { collection, doc, getDoc, getDocs, getFirestore, where, addDoc, deleteDoc, updateDoc  } from "firebase/firestore";
 import { firebaseConfig, app, db, auth } from "../firebase.js";
 import { BrowserRouter,  Route, Routes, NavLink} from 'react-router';
+import { onAuthStateChanged, signOut  } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from 'react';
 
@@ -49,24 +50,55 @@ function GetSingleData({ documentName }) {
 }
 
 function GetUserProfile({userId}) {
+  const [bio, setBio] = useState("");
+  const [user, setUser] = useState(null);
+  const authUser = auth.currentUser;
   const [data, setData] = useState();
   useEffect(() => {
     async function fetchData() {
+      onAuthStateChanged(auth, (authUser) => {
+        setUser(authUser);
+      });
       const docSnap = await getDoc(doc(db, "Users", userId));
       setData(docSnap);
+      setBio(docSnap.data().bio);
     }
     fetchData();
   }, [userId]);
-  if (data) {
-    return (
-      <>
-        <div className="test-container">
-          <h2>{data.data().name || "No name"}</h2>
-          <p>{data.id}</p>
-          <p>{data.data().bio || "No Description"}</p>
-        </div>
-      </>
-    );
+
+  async function UpdateProfile(e) {
+    e.preventDefault();
+    console.log("updated bio to: "+ bio);
+    await updateDoc(doc(db, "Users", userId), { 
+      bio: bio
+    });
+  }
+
+  if(data){
+    if(user && userId == user.uid){
+      return (
+        <>
+          <div className="test-container">
+            <h2>{data.data().name || "No name"}</h2>
+            <p>{data.id}</p>
+            <form onSubmit={UpdateProfile}>
+              <input type="text" value={bio} onChange={(e) => setBio(e.target.value)} placeholder="About me"/>
+              <button type="submit">Update profile</button>
+            </form>
+          </div>
+        </>
+      );
+    }else{
+      return (
+        <>
+          <div className="test-container">
+            <h2>{data.data().name || "No name"}</h2>
+            <p>{data.id}</p>
+            <p>{data.data().bio || "No Description"}</p>
+          </div>
+        </>
+      );
+    }
   }
 }
 

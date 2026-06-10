@@ -55,7 +55,7 @@ function Register(){
                 }else if(error.code == "auth/email-already-in-use"){
                     setError("Email is already in use");
                 }else{
-                    setError(error);
+                    setError(error.code);
                 }
             }
         }else{
@@ -111,6 +111,10 @@ function Login(){
                 setError("Invalid password");
             }else if(error.code == "auth/invalid-credential"){
                 setError("Wrong email or password");
+            }else if( error.code == "auth/too-many-requests"){
+                setError("To many login attempts");
+            }else{
+                setError(error.code);
             }
         }
     }
