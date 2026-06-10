@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { BrowserRouter,  Route, Routes, NavLink, useSearchParams, redirect, useNavigate } from 'react-router';
 import { onAuthStateChanged, signOut  } from "firebase/auth";
-import { GetAllData, GetSingleData } from './Content.jsx';
+import { GetAllData, GetSingleData, GetUserProfile } from './Content.jsx';
 import { collection, doc, getDoc, getDocs, getFirestore, where, addDoc, deleteDoc, updateDoc, setDoc } from "firebase/firestore";
 import { auth, db } from "../firebase.js";
 
@@ -135,7 +135,7 @@ function Login(){
 function Profile(){
     const [param] = useSearchParams();
     return(
-        <div>{param.get("id")}</div>
+        <GetUserProfile userId = {param.get("id")}/>
     );
 }
 

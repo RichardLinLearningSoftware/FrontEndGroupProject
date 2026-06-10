@@ -48,4 +48,26 @@ function GetSingleData({ documentName }) {
   }
 }
 
-export { GetAllData, GetSingleData }
+function GetUserProfile({userId}) {
+  const [data, setData] = useState();
+  useEffect(() => {
+    async function fetchData() {
+      const docSnap = await getDoc(doc(db, "Users", userId));
+      setData(docSnap);
+    }
+    fetchData();
+  }, [userId]);
+  if (data) {
+    return (
+      <>
+        <div className="test-container">
+          <h2>{data.data().name || "No name"}</h2>
+          <p>{data.id}</p>
+          <p>{data.data().bio || "No Description"}</p>
+        </div>
+      </>
+    );
+  }
+}
+
+export { GetAllData, GetSingleData, GetUserProfile }
