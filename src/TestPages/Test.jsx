@@ -1,4 +1,4 @@
-import { collection, doc, getDoc, getDocs, getFirestore, where, addDoc, deleteDoc, updateDoc  } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, getFirestore, where, addDoc, deleteDoc, updateDoc, SetData  } from "firebase/firestore";
 import { firebaseConfig, app, db, auth } from "../firebase.js";
 /* 
 Check if a document exist
@@ -38,6 +38,14 @@ async function GetAllData() {
 
 async function CreateData() {
     addDoc(collection(db, "testingStuff"), {
+        name: "Los Angeles",
+        state: "CA",
+        country: "USA"
+    });
+}
+
+async function SetData() {
+    await setDoc(doc(db, "collectionName", "documentName"), {
         name: "Los Angeles",
         state: "CA",
         country: "USA"

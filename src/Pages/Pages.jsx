@@ -1,25 +1,10 @@
 import { useEffect, useState } from 'react';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { BrowserRouter,  Route, Routes, NavLink, useSearchParams} from 'react-router';
+import { BrowserRouter,  Route, Routes, NavLink, useSearchParams, redirect, useNavigate } from 'react-router';
 import { onAuthStateChanged, signOut  } from "firebase/auth";
-import { GetAllData, GetSingleData } from './Content.jsx';
-import { auth } from "../firebase.js";
-
-const user = auth.currentUser;
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    // User is signed in, see docs for a list of available properties
-    // https://firebase.google.com/docs/reference/js/auth.user
-    const uid = user.uid;
-    console.log("is logged in");
-    console.log(user.email);
-    // ...
-  } else {
-    console.log("not logged in");
-    // User is signed out
-    // ...
-  }
-});
+import { GetAllData, GetSingleData, GetUserProfile } from './Content.jsx';
+import { collection, doc, getDoc, getDocs, getFirestore, where, addDoc, deleteDoc, updateDoc, setDoc } from "firebase/firestore";
+import { auth, db } from "../firebase.js";
 
 function HomePage(){
     return(
@@ -44,17 +29,43 @@ function TestPage(){
 }
 
 function Register(){
+    const navigate = useNavigate();
+    const [error, setError] = useState("");
     const [email, setEmail] = useState("");
+    const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
     async function RegisterUser(e) {
         e.preventDefault();
-        try {
-            const userCredential = await createUserWithEmailAndPassword( auth, email, password);
-            console.log(userCredential.user);
-        } catch (error) {
-            console.log(error.code);
-            console.log(error.message);
+        if(password.length >= 6 && username.length >= 3){
+            try {
+                const userCredential = await createUserWithEmailAndPassword( auth, email, password);
+                console.log(userCredential.user.uid);
+
+                await setDoc(doc(db, "Users", userCredential.user.uid), {
+                        name: username,
+                        bio: "Hello i'm " + username
+                });
+                navigate("/");
+            } catch (error) {
+                console.log(error.code);
+                console.log(error.message);
+                if(error.code == "auth/invalid-email"){
+                    setError("Invalid email");
+                }else if(error.code == "auth/email-already-in-use"){
+                    setError("Email is already in use");
+                }else{
+                    setError(error.code);
+                }
+            }
+        }else{
+            if(password.length < 6){
+                setError("Password must be 6 characters long or longer");
+            }else if(username.length < 3){
+                setError("Username must be 3 characters or longer");
+            }else{
+                setError("Unknown error");
+            }
         }
     }
     
@@ -62,8 +73,10 @@ function Register(){
         <>
             <h2>Register</h2>
             <form onSubmit={RegisterUser}>
-                <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email"/>
-                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="password"/>
+                <input type="text" onChange={(e) => setEmail(e.target.value)} placeholder="email"/>
+                <input type="text" onChange={(e) => setUsername(e.target.value)} placeholder="username"/>
+                <input type="password" onChange={(e) => setPassword(e.target.value)} placeholder="password"/>
+                <h3>{error}</h3>
                 <button type="submit">Submit</button>
             </form>
         </>
@@ -71,31 +84,63 @@ function Register(){
 }
 
 function Login(){
+    const navigate = useNavigate();
+    const [user, setUser] = useState(null);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const authUser = auth.currentUser;
+    useEffect(() => {
+        onAuthStateChanged(auth, (authUser) => {
+            setUser(authUser);
+        });
+    }, []);
 
     async function LoginUser(e) {
         e.preventDefault();
         try {
             const userCredential = await signInWithEmailAndPassword( auth, email, password);
             console.log(userCredential.user);
+            navigate("/");
         } catch (error) {
             console.log(error.code);
             console.log(error.message);
+            if(error.code == "auth/invalid-email"){
+                setError("Invalid email");
+            }else if(error.code == "auth/missing-password"){
+                setError("Invalid password");
+            }else if(error.code == "auth/invalid-credential"){
+                setError("Wrong email or password");
+            }else if( error.code == "auth/too-many-requests"){
+                setError("To many login attempts");
+            }else{
+                setError(error.code);
+            }
         }
     }
     
     return (
         <>
-            <h2>Login</h2>
-            <form onSubmit={LoginUser}>
-                <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email"/>
-                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="password"/>
-                <button type="submit">Submit</button>
-            </form>
-            <button onClick={()=>signOut(auth)}>Logout</button>
+            <h2>{user ? "Logout" : "Login"}</h2>
+            {user ?
+                <button onClick={()=>signOut(auth)}>Logout</button>
+            :
+                <form onSubmit={LoginUser}>
+                    <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email"/>
+                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="password"/>
+                    <h3>{error}</h3>
+                    <button type="submit">Submit</button>
+                </form>
+            }
         </>
     );
 }
 
-export {HomePage, ContactPage, TestPage, Register, Login}
+function Profile(){
+    const [param] = useSearchParams();
+    return(
+        <GetUserProfile userId = {param.get("id")}/>
+    );
+}
+
+export {HomePage, ContactPage, TestPage, Register, Login, Profile}
