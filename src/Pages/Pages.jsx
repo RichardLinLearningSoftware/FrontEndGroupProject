@@ -28,7 +28,10 @@ function HomePage(){
 
 function ContactPage(){
     return(
-        <h2>Contact page</h2>
+        <>
+            <h2>Contact page</h2>
+            <p>Lorem ipsum or somthing</p>
+        </>
     );
 }
 
