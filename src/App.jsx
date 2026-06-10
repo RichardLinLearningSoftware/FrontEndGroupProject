@@ -1,7 +1,7 @@
 import './App.css'
 import { useEffect, useState } from 'react';
 import { BrowserRouter,  Route, Routes, NavLink} from 'react-router';
-import { ContactPage, HomePage, TestPage, Register, Login, Profile } from './Pages/Pages';
+import { ContactPage, HomePage, TestPage, Register, Login, Profile, NotFound } from './Pages/Pages';
 import { onAuthStateChanged, signOut  } from "firebase/auth";
 import { auth } from "./firebase.js";
 
@@ -26,6 +26,7 @@ function App() {
         </nav>
 
         <Routes>
+          <Route path="*" element={<NotFound/>}/>
           <Route path="/" element={<HomePage/>}/>
           <Route path="contact" element={<ContactPage/>}/>
           <Route path="testPage" element={<TestPage/>}/>

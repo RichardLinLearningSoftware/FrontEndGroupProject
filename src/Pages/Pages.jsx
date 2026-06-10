@@ -6,6 +6,17 @@ import { GetAllData, GetSingleData, GetUserProfile } from './Content.jsx';
 import { collection, doc, getDoc, getDocs, getFirestore, where, addDoc, deleteDoc, updateDoc, setDoc } from "firebase/firestore";
 import { auth, db } from "../firebase.js";
 
+function NotFound(){
+    const navigate = useNavigate();
+    return(
+        <>
+            <h2>Page not found</h2>
+            <p>This page doesnt exist try something else bruh</p>
+            <button onClick={() => navigate("/")}>Go to homepage</button>
+        </>
+    )
+}
+
 function HomePage(){
     return(
         <>
@@ -143,4 +154,4 @@ function Profile(){
     );
 }
 
-export {HomePage, ContactPage, TestPage, Register, Login, Profile}
+export {HomePage, ContactPage, TestPage, Register, Login, Profile, NotFound}
