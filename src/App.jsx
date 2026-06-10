@@ -1,7 +1,7 @@
 import './App.css'
 import { useEffect, useState } from 'react';
 import { BrowserRouter,  Route, Routes, NavLink} from 'react-router';
-import { ContactPage, HomePage, TestPage, Register, Login } from './Pages/Pages';
+import { ContactPage, HomePage, TestPage, Register, Login, Profile } from './Pages/Pages';
 import { onAuthStateChanged, signOut  } from "firebase/auth";
 import { auth } from "./firebase.js";
 
@@ -21,6 +21,7 @@ function App() {
           <NavLink to="/" end>Home</NavLink>
           <NavLink to="/contact" end>Contact</NavLink>
           {!user && <NavLink to="/register" end>Register</NavLink>}
+          {user && <NavLink to={{pathname: "/user", search: `id=${user.uid}`,}} end>Profile</NavLink>}
           <NavLink to="/login" end>{user ? "Logout" : "Login"}</NavLink>
         </nav>
 
@@ -30,6 +31,7 @@ function App() {
           <Route path="testPage" element={<TestPage/>}/>
           <Route path="register" element={<Register/>}/>
           <Route path="login" element={<Login/>}/>
+          <Route path="user" element={<Profile/>}/>
         </Routes>
 
         <footer>
