@@ -50,6 +50,16 @@ function GetSingleData({ documentName }) {
 }
 
 function GetUserProfile({userId}) {
+  if(userId == null){
+    return(
+      <>
+        <div className="test-container">
+            <h2>User doesnt seem to exist</h2>
+        </div>
+      </>
+    )
+  }
+  const [userExits, setUserExits] = useState(false);
   const [bio, setBio] = useState("");
   const [user, setUser] = useState(null);
   const authUser = auth.currentUser;
@@ -60,8 +70,11 @@ function GetUserProfile({userId}) {
         setUser(authUser);
       });
       const docSnap = await getDoc(doc(db, "Users", userId));
-      setData(docSnap);
-      setBio(docSnap.data().bio);
+      if(docSnap.exists()){
+        setUserExits(true)
+        setData(docSnap);
+        setBio(docSnap.data().bio);
+      }
     }
     fetchData();
   }, [userId]);
@@ -74,7 +87,7 @@ function GetUserProfile({userId}) {
     });
   }
 
-  if(data){
+  if(data && userExits){
     if(user && userId == user.uid){
       return (
         <>
@@ -99,6 +112,14 @@ function GetUserProfile({userId}) {
         </>
       );
     }
+  }else{
+    return(
+      <>
+        <div className="test-container">
+            <h2>User doesnt seem to exist</h2>
+        </div>
+      </>
+    )
   }
 }
 
