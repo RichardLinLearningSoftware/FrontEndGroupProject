@@ -30,24 +30,42 @@ function TestPage(){
 
 function Register(){
     const navigate = useNavigate();
+    const [error, setError] = useState("");
     const [email, setEmail] = useState("");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
     async function RegisterUser(e) {
         e.preventDefault();
-        try {
-            const userCredential = await createUserWithEmailAndPassword( auth, email, password);
-            console.log(userCredential.user.uid);
+        if(password.length >= 6 && username.length >= 3){
+            try {
+                const userCredential = await createUserWithEmailAndPassword( auth, email, password);
+                console.log(userCredential.user.uid);
 
-            await setDoc(doc(db, "Users", userCredential.user.uid), {
-                    name: username,
-                    bio: "Hello i'm " + username
-            });
-            navigate("/");
-        } catch (error) {
-            console.log(error.code);
-            console.log(error.message);
+                await setDoc(doc(db, "Users", userCredential.user.uid), {
+                        name: username,
+                        bio: "Hello i'm " + username
+                });
+                navigate("/");
+            } catch (error) {
+                console.log(error.code);
+                console.log(error.message);
+                if(error.code == "auth/invalid-email"){
+                    setError("Invalid email");
+                }else if(error.code == "auth/email-already-in-use"){
+                    setError("Email is already in use");
+                }else{
+                    setError(error);
+                }
+            }
+        }else{
+            if(password.length < 6){
+                setError("Password must be 6 characters long or longer");
+            }else if(username.length < 3){
+                setError("Username must be 3 characters or longer");
+            }else{
+                setError("Unknown error");
+            }
         }
     }
     
@@ -58,6 +76,7 @@ function Register(){
                 <input type="text" onChange={(e) => setEmail(e.target.value)} placeholder="email"/>
                 <input type="text" onChange={(e) => setUsername(e.target.value)} placeholder="username"/>
                 <input type="password" onChange={(e) => setPassword(e.target.value)} placeholder="password"/>
+                <h3>{error}</h3>
                 <button type="submit">Submit</button>
             </form>
         </>
@@ -67,15 +86,15 @@ function Register(){
 function Login(){
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
     const authUser = auth.currentUser;
     useEffect(() => {
         onAuthStateChanged(auth, (authUser) => {
             setUser(authUser);
         });
     }, []);
-
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
 
     async function LoginUser(e) {
         e.preventDefault();
@@ -86,6 +105,13 @@ function Login(){
         } catch (error) {
             console.log(error.code);
             console.log(error.message);
+            if(error.code == "auth/invalid-email"){
+                setError("Invalid email");
+            }else if(error.code == "auth/missing-password"){
+                setError("Invalid password");
+            }else if(error.code == "auth/invalid-credential"){
+                setError("Wrong email or password");
+            }
         }
     }
     
@@ -98,6 +124,7 @@ function Login(){
                 <form onSubmit={LoginUser}>
                     <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email"/>
                     <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="password"/>
+                    <h3>{error}</h3>
                     <button type="submit">Submit</button>
                 </form>
             }
