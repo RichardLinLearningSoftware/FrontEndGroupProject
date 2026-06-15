@@ -14,13 +14,26 @@ function GetAllData() {
     }
     fetchData();
   },[]);
+
+  if (docs.length == 0) {
+    return(
+      <>
+        <div className="test-container">
+          <h2>No content yet</h2>
+        </div>
+      </>
+    )
+  }
+
   return (
     <>
       {docs.map(doc => 
         <NavLink key={doc.id} className="test-container" to={{pathname: "/testPage", search: `id=${doc.id}`,}}>
-          <h2>{doc.data().name || "No name"}</h2>
-          <p>{doc.id}</p>
-          <p>{doc.data().desc || "No description"}</p>
+          <h2>title: {doc.data().title}</h2>
+          <p>id: {doc.id}</p>
+          <p>user: {doc.data().user}</p>
+          <p>uid: {doc.data().uid}</p>
+          <p>desc: {doc.data().description}</p>
         </NavLink>
       )}
     </>
@@ -28,24 +41,62 @@ function GetAllData() {
 }
 
 function GetSingleData({ documentName }) {
+  const navigate = useNavigate();
   const [data, setData] = useState();
+  const [user, setUser] = useState(null);
+  const authUser = auth.currentUser;
   useEffect(() => {
     async function fetchData() {
+      onAuthStateChanged(auth, (authUser) => {
+        setUser(authUser);
+      });
       const docSnap = await getDoc(doc(db, "TestCollection", documentName));
-      setData(docSnap);
+      if(docSnap.exists()){
+        setData(docSnap);
+      }
     }
     fetchData();
-  }, [documentName]);
+  }, [documentName, data]);
+  async function  DeletePost() {
+      await deleteDoc(doc(db, "TestCollection", documentName));
+      setData(null);
+  }
+
   if (data) {
-    return (
+    if(user){
+      return (
+        <>
+          <div className="test-container">
+            <h2>title: {data.data().title}</h2>
+            <p>id: {data.id}</p>
+            <NavLink to={{pathname: "/user", search: `id=${data.data().uid}`,}} end>user: {data.data().user}</NavLink>
+            <p>uid: {data.data().uid}</p>
+            <p>desc: {data.data().description}</p>
+            {user.uid == data.data().uid && <button onClick={DeletePost}>Delete post</button>}
+          </div>
+        </>
+      );
+    }else{
+      return (
+        <>
+          <div className="test-container">
+            <h2>title: {data.data().title}</h2>
+            <p>id: {data.id}</p>
+            <NavLink to={{pathname: "/user", search: `id=${data.data().uid}`,}} end>user: {data.data().user}</NavLink>
+            <p>uid: {data.data().uid}</p>
+            <p>desc: {data.data().description}</p>
+          </div>
+        </>
+      );
+    }
+  }else{
+    return(
       <>
         <div className="test-container">
-          <h2>{data.data().name || "No name"}</h2>
-          <p>{data.id}</p>
-          <p>{data.data().desc || "No Description"}</p>
+            <h2>This post doesnt seem to exist</h2>
         </div>
       </>
-    );
+    )
   }
 }
 

@@ -157,4 +157,43 @@ function Profile(){
     );
 }
 
-export {HomePage, ContactPage, TestPage, Register, Login, Profile, NotFound}
+function CreatePost(){
+    const navigate = useNavigate();
+    const [title, setTitle] = useState("");
+    const [desc, setDesc] = useState("");
+    const [user, setUser] = useState(null);
+    const authUser = auth.currentUser;
+    useEffect(() => {
+        onAuthStateChanged(auth, async (authUser) => {
+            const docSnap = await getDoc(doc(db, "Users", authUser.uid));
+            if(docSnap.exists()){
+                setUser(docSnap);
+            }
+        });
+    }, []);
+
+    if(user){
+        async function CreatePost(e) {
+            e.preventDefault();
+            addDoc(collection(db, "TestCollection"), {
+                user: user.data().name,
+                uid: authUser.uid,
+                title: title,
+                description: desc
+            });
+            navigate("/");
+        }
+
+        return(
+            <>
+                <form onSubmit={CreatePost}>
+                    <input type="text" onChange={(e) => setTitle(e.target.value)} placeholder="Title" required/>
+                    <textarea onChange={(e) => setDesc(e.target.value)} placeholder="Description"></textarea>
+                    <button type="submit">Submit</button>
+                </form>
+            </>
+        );
+    }
+}
+
+export {HomePage, ContactPage, TestPage, Register, Login, Profile, NotFound, CreatePost}
