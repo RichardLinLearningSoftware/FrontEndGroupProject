@@ -9,7 +9,7 @@ function GetAllData() {
   const [docs, setDocs] = useState([]);
   useEffect(() => {
     async function fetchData() {
-      const querySnapshot = await getDocs(collection(db, "TestCollection"));
+      const querySnapshot = await getDocs(collection(db, "Posts"));
       setDocs(querySnapshot.docs);
     }
     fetchData();
@@ -50,7 +50,7 @@ function GetSingleData({ documentName }) {
       onAuthStateChanged(auth, (authUser) => {
         setUser(authUser);
       });
-      const docSnap = await getDoc(doc(db, "TestCollection", documentName));
+      const docSnap = await getDoc(doc(db, "Posts", documentName));
       if(docSnap.exists()){
         setData(docSnap);
       }
@@ -58,7 +58,7 @@ function GetSingleData({ documentName }) {
     fetchData();
   }, [documentName, data]);
   async function  DeletePost() {
-      await deleteDoc(doc(db, "TestCollection", documentName));
+      await deleteDoc(doc(db, "Posts", documentName));
       setData(null);
   }
 
