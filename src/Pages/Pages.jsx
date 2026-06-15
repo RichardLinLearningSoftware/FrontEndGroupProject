@@ -198,7 +198,8 @@ function CreatePost(){
                 user: user.data().name,
                 uid: authUser.uid,
                 title: title,
-                description: desc
+                description: desc,
+                creationDate: Date.now(),
             });
             navigate("/");
         }
