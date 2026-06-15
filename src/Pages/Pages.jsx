@@ -176,6 +176,7 @@ function Profile(){
 function CreatePost(){
     const navigate = useNavigate();
     const [title, setTitle] = useState("");
+    const [files, setFiles] = useState([]);
     const [desc, setDesc] = useState("");
     const [user, setUser] = useState(null);
     const authUser = auth.currentUser;
@@ -201,11 +202,11 @@ function CreatePost(){
             });
             navigate("/");
         }
-
         return(
             <>
                 <form onSubmit={CreatePost}>
                     <input type="text" onChange={(e) => setTitle(e.target.value)} placeholder="Title" required/>
+                    <input type="file" accept="image/*,video/*,audio/*,.glb,.gltf" onChange={(e) => setFiles([...e.target.files])}/>
                     <textarea onChange={(e) => setDesc(e.target.value)} placeholder="Description"></textarea>
                     <button type="submit">Submit</button>
                 </form>
@@ -215,7 +216,7 @@ function CreatePost(){
         return(
             <>
                 <h2>Pls login to create post</h2>
-                <p>This page cannot be used bruh</p>
+                <p>This page cannot be used</p>
                 <button onClick={() => navigate("/login")}>Login</button>
                 <button onClick={() => navigate("/register")}>Register</button>
             </>
