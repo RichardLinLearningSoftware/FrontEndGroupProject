@@ -48,6 +48,13 @@ function Register(){
     const [email, setEmail] = useState("");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [user, setUser] = useState(null);
+    const authUser = auth.currentUser;
+    useEffect(() => {
+        onAuthStateChanged(auth, (authUser) => {
+            setUser(authUser);
+        });
+    }, []);
 
     async function RegisterUser(e) {
         e.preventDefault();
@@ -83,18 +90,27 @@ function Register(){
         }
     }
     
-    return (
-        <>
-            <h2>Register</h2>
-            <form onSubmit={RegisterUser}>
-                <input type="text" onChange={(e) => setEmail(e.target.value)} placeholder="email"/>
-                <input type="text" onChange={(e) => setUsername(e.target.value)} placeholder="username"/>
-                <input type="password" onChange={(e) => setPassword(e.target.value)} placeholder="password"/>
-                <h3>{error}</h3>
-                <button type="submit">Submit</button>
-            </form>
-        </>
-    );
+    if(!user){
+        return (
+            <>
+                <h2>Register</h2>
+                <form onSubmit={RegisterUser}>
+                    <input type="text" onChange={(e) => setEmail(e.target.value)} placeholder="email"/>
+                    <input type="text" onChange={(e) => setUsername(e.target.value)} placeholder="username"/>
+                    <input type="password" onChange={(e) => setPassword(e.target.value)} placeholder="password"/>
+                    <h3>{error}</h3>
+                    <button type="submit">Submit</button>
+                </form>
+            </>
+        );
+    }else{
+        return (
+            <>
+                <h2>You are already logged in</h2>
+                <p>Log out to create a acount</p>
+            </>
+        );
+    }
 }
 
 function Login(){
@@ -157,4 +173,54 @@ function Profile(){
     );
 }
 
-export {HomePage, ContactPage, TestPage, Register, Login, Profile, NotFound}
+function CreatePost(){
+    const navigate = useNavigate();
+    const [title, setTitle] = useState("");
+    const [desc, setDesc] = useState("");
+    const [user, setUser] = useState(null);
+    const authUser = auth.currentUser;
+    useEffect(() => {
+        onAuthStateChanged(auth, async (authUser) => {
+            if(authUser != null){
+                const docSnap = await getDoc(doc(db, "Users", authUser.uid));
+                if(docSnap.exists()){
+                    setUser(docSnap);
+                }
+            }
+        });
+    }, []);
+
+    if(user){
+        async function CreatePost(e) {
+            e.preventDefault();
+            addDoc(collection(db, "Posts"), {
+                user: user.data().name,
+                uid: authUser.uid,
+                title: title,
+                description: desc
+            });
+            navigate("/");
+        }
+
+        return(
+            <>
+                <form onSubmit={CreatePost}>
+                    <input type="text" onChange={(e) => setTitle(e.target.value)} placeholder="Title" required/>
+                    <textarea onChange={(e) => setDesc(e.target.value)} placeholder="Description"></textarea>
+                    <button type="submit">Submit</button>
+                </form>
+            </>
+        );
+    }else{
+        return(
+            <>
+                <h2>Pls login to create post</h2>
+                <p>This page cannot be used bruh</p>
+                <button onClick={() => navigate("/login")}>Login</button>
+                <button onClick={() => navigate("/register")}>Register</button>
+            </>
+        )
+    }
+}
+
+export {HomePage, ContactPage, TestPage, Register, Login, Profile, NotFound, CreatePost}
