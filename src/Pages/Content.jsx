@@ -131,7 +131,7 @@ function GetSingleData({ documentName }) {
       }else{
         const { scene } = useGLTF(mediaUrl);
         return(
-          <Canvas style={{ width: "100%", height: "500px" }} className="modelViewPortSmall">
+          <Canvas style={{ width: "100%", height: "300px" }} className="modelViewPortSmall">
             <ambientLight intensity={2}/>
             <primitive object={scene} />
             <OrbitControls/>
@@ -159,7 +159,7 @@ function GetSingleData({ documentName }) {
     }else{
       return (
         <>
-          <div className="test-container">
+          <div className="view-post">
             <h2>title: {data.data().title}</h2>
             <p>id: {data.id}</p>
             <NavLink to={{pathname: "/user", search: `id=${data.data().uid}`,}} end>user: {data.data().user}</NavLink>
