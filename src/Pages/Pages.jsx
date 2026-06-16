@@ -5,6 +5,7 @@ import { onAuthStateChanged, signOut  } from "firebase/auth";
 import { GetAllData, GetSingleData, GetUserProfile } from './Content.jsx';
 import { collection, doc, getDoc, getDocs, getFirestore, where, addDoc, deleteDoc, updateDoc, setDoc } from "firebase/firestore";
 import { auth, db } from "../firebase.js";
+import { supabase } from '../supabase.js';
 
 function NotFound(){
     const navigate = useNavigate();
@@ -36,7 +37,34 @@ function ContactPage(){
 }
 
 function TestPage(){
+    const [files, setFiles] = useState([]);
+    async function testUpload(e) {
+        e.preventDefault();
+
+        const fileName = Date.now() + "-" + files.name;
+        const { data, error } = await supabase.storage
+            .from("MediaPost")
+            .upload("public/" + fileName, files);
+        console.log(data);
+        if (error) {
+            console.error("Upload error:", error);
+        }
+    }
+
+    return(
+        <>
+            <h2>test media post</h2>
+            <form onSubmit={testUpload}>
+                <input type="file" accept="image/*,video/*,audio/*,.glb,.gltf" onChange={(e) => setFiles(e.target.files[0])}/>
+                <button type="submit">Submit</button>
+            </form>
+        </>
+    );
+}
+
+function Post(){
     const [param] = useSearchParams();
+
     return(
         <GetSingleData documentName = {param.get("id")}/>
     );
@@ -176,6 +204,7 @@ function Profile(){
 function CreatePost(){
     const navigate = useNavigate();
     const [title, setTitle] = useState("");
+    const [files, setFiles] = useState(null);
     const [desc, setDesc] = useState("");
     const [user, setUser] = useState(null);
     const authUser = auth.currentUser;
@@ -193,19 +222,51 @@ function CreatePost(){
     if(user){
         async function CreatePost(e) {
             e.preventDefault();
-            addDoc(collection(db, "Posts"), {
-                user: user.data().name,
-                uid: authUser.uid,
-                title: title,
-                description: desc
-            });
-            navigate("/");
-        }
 
+            let uploadedPath = null;
+            let mediaUrl = null;
+            let fileType = null;
+            try {
+                if (files) {
+                    const fileName = Date.now()+"-"+files.name;
+                    uploadedPath = "public/"+fileName;
+                    const { error: uploadError } = await supabase.storage
+                        .from("MediaPost")
+                        .upload(uploadedPath, files);
+                    if (uploadError) {
+                        throw uploadError;
+                    }
+                    const { data } = supabase.storage
+                        .from("MediaPost")
+                        .getPublicUrl(uploadedPath);
+                    mediaUrl = data.publicUrl;
+                    fileType = files.type;
+                }
+                await addDoc(collection(db, "Posts"), {
+                    user: user.data().name,
+                    uid: authUser.uid,
+                    title: title,
+                    description: desc,
+                    creationDate: Date.now(),
+                    media: mediaUrl,
+                    fileType: fileType,
+                    filePath: uploadedPath
+                });
+                navigate("/");
+            } catch (error) {
+                console.error(error);
+                if (uploadedPath) {
+                    await supabase.storage
+                        .from("MediaPost")
+                        .remove([uploadedPath]);
+                }
+            }
+        }
         return(
             <>
                 <form onSubmit={CreatePost}>
                     <input type="text" onChange={(e) => setTitle(e.target.value)} placeholder="Title" required/>
+                    <input type="file" accept="image/*,video/*,audio/*,.glb,.gltf" onChange={(e) => setFiles(e.target.files[0])}/>
                     <textarea onChange={(e) => setDesc(e.target.value)} placeholder="Description"></textarea>
                     <button type="submit">Submit</button>
                 </form>
@@ -215,7 +276,7 @@ function CreatePost(){
         return(
             <>
                 <h2>Pls login to create post</h2>
-                <p>This page cannot be used bruh</p>
+                <p>This page cannot be used</p>
                 <button onClick={() => navigate("/login")}>Login</button>
                 <button onClick={() => navigate("/register")}>Register</button>
             </>
@@ -223,4 +284,4 @@ function CreatePost(){
     }
 }
 
-export {HomePage, ContactPage, TestPage, Register, Login, Profile, NotFound, CreatePost}
+export {HomePage, ContactPage, TestPage, Register, Login, Profile, NotFound, CreatePost, Post}

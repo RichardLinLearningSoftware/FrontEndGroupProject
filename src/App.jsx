@@ -1,7 +1,7 @@
 import './App.css'
 import { useEffect, useState } from 'react';
 import { BrowserRouter,  Route, Routes, NavLink} from 'react-router';
-import { ContactPage, HomePage, TestPage, Register, Login, Profile, NotFound, CreatePost } from './Pages/Pages';
+import { ContactPage, HomePage, TestPage, Register, Login, Profile, NotFound, CreatePost, Post } from './Pages/Pages';
 import { onAuthStateChanged, signOut  } from "firebase/auth";
 import { auth } from "./firebase.js";
 
@@ -31,6 +31,7 @@ function App() {
           <Route path="/" element={<HomePage/>}/>
           <Route path="contact" element={<ContactPage/>}/>
           <Route path="testPage" element={<TestPage/>}/>
+          <Route path="post" element={<Post/>}/>
           <Route path="register" element={<Register/>}/>
           <Route path="createPost" element={<CreatePost/>}/>
           <Route path="login" element={<Login/>}/>

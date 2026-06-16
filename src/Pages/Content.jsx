@@ -4,6 +4,7 @@ import { BrowserRouter,  Route, Routes, NavLink} from 'react-router';
 import { onAuthStateChanged, signOut  } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from 'react';
+import { supabase } from "../supabase.js";
 
 function GetAllData() {
   const [docs, setDocs] = useState([]);
@@ -25,16 +26,43 @@ function GetAllData() {
     )
   }
 
+  function RenderMedia(media){
+    const type  = media.media.fileType;
+    const mediaUrl = media.media.media;
+    if(media){
+      if(type?.startsWith("image/")){
+        return (
+          <img src={mediaUrl}/>
+        );
+      }
+
+      if (type?.startsWith("video/")) {
+        return (
+            <video src={mediaUrl} controls/>
+          );
+      }
+
+      if (type?.startsWith("audio/")) {
+        return (
+          <audio src={mediaUrl} controls/>
+        );
+      }
+    }
+  }
+
   return (
     <>
-      {docs.map(doc => 
-        <NavLink key={doc.id} className="test-container" to={{pathname: "/testPage", search: `id=${doc.id}`,}}>
-          <h2>title: {doc.data().title}</h2>
-          <p>id: {doc.id}</p>
-          <p>user: {doc.data().user}</p>
-          <p>uid: {doc.data().uid}</p>
-          <p>desc: {doc.data().description}</p>
-        </NavLink>
+      {docs.map(doc =>
+        <div className="test-container" key={doc.id}>
+          <NavLink to={{pathname: "/post", search: `id=${doc.id}`,}}>
+            <h2>title: {doc.data().title}</h2>
+            <p>id: {doc.id}</p>
+            <p>user: {doc.data().user}</p>
+            <p>uid: {doc.data().uid}</p>
+            <p>desc: {doc.data().description}</p>
+          </NavLink>
+          <RenderMedia media = {doc.data()}/>
+        </div>
       )}
     </>
   );
@@ -56,10 +84,39 @@ function GetSingleData({ documentName }) {
       }
     }
     fetchData();
-  }, [documentName, data]);
+  }, [documentName]);
   async function  DeletePost() {
+      if (data.data().filePath) {
+        await supabase.storage
+          .from("MediaPost")
+          .remove([data.data().filePath]);
+      }
       await deleteDoc(doc(db, "Posts", documentName));
       setData(null);
+  }
+
+  function RenderMedia(media){
+    const type  = media.media.fileType;
+    const mediaUrl = media.media.media;
+    if(media){
+      if(type?.startsWith("image/")){
+        return (
+          <img src={mediaUrl}/>
+        );
+      }
+
+      if (type?.startsWith("video/")) {
+        return (
+            <video src={mediaUrl} controls/>
+          );
+      }
+
+      if (type?.startsWith("audio/")) {
+        return (
+          <audio src={mediaUrl} controls/>
+        );
+      }
+    }
   }
 
   if (data) {
@@ -72,6 +129,7 @@ function GetSingleData({ documentName }) {
             <NavLink to={{pathname: "/user", search: `id=${data.data().uid}`,}} end>user: {data.data().user}</NavLink>
             <p>uid: {data.data().uid}</p>
             <p>desc: {data.data().description}</p>
+            <RenderMedia media = {data.data()}/>
             {user.uid == data.data().uid && <button onClick={DeletePost}>Delete post</button>}
           </div>
         </>
@@ -85,6 +143,7 @@ function GetSingleData({ documentName }) {
             <NavLink to={{pathname: "/user", search: `id=${data.data().uid}`,}} end>user: {data.data().user}</NavLink>
             <p>uid: {data.data().uid}</p>
             <p>desc: {data.data().description}</p>
+            <RenderMedia media = {data.data()}/>
           </div>
         </>
       );
