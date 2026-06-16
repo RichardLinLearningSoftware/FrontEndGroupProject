@@ -35,7 +35,6 @@ function ContactPage(){
         </>
     );
 }
-//image/jpeg
 
 function TestPage(){
     const [files, setFiles] = useState([]);
@@ -215,14 +214,41 @@ function CreatePost(){
     if(user){
         async function CreatePost(e) {
             e.preventDefault();
-            addDoc(collection(db, "Posts"), {
-                user: user.data().name,
-                uid: authUser.uid,
-                title: title,
-                description: desc,
-                creationDate: Date.now(),
-            });
-            navigate("/");
+
+            let uploadedPath = null;
+            let mediaUrl = null;
+            try {
+                if (files) {
+                    const fileName = Date.now()+"-"+files.name;
+                    uploadedPath = "public/"+fileName;
+                    const { error: uploadError } = await supabase.storage
+                        .from("MediaPost")
+                        .upload(uploadedPath, files);
+                    if (uploadError) {
+                        throw uploadError;
+                    }
+                    const { data } = supabase.storage
+                        .from("MediaPost")
+                        .getPublicUrl(uploadedPath);
+                    mediaUrl = data.publicUrl;
+                }
+                await addDoc(collection(db, "Posts"), {
+                    user: user.data().name,
+                    uid: authUser.uid,
+                    title: title,
+                    description: desc,
+                    creationDate: Date.now(),
+                    media: mediaUrl
+                });
+                navigate("/");
+            } catch (error) {
+                console.error(error);
+                if (uploadedPath) {
+                    await supabase.storage
+                        .from("MediaPost")
+                        .remove([uploadedPath]);
+                }
+            }
         }
         return(
             <>
