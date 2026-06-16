@@ -62,6 +62,14 @@ function TestPage(){
     );
 }
 
+function Post(){
+    const [param] = useSearchParams();
+
+    return(
+        <GetSingleData documentName = {param.get("id")}/>
+    );
+}
+
 function Register(){
     const navigate = useNavigate();
     const [error, setError] = useState("");
@@ -238,7 +246,8 @@ function CreatePost(){
                     title: title,
                     description: desc,
                     creationDate: Date.now(),
-                    media: mediaUrl
+                    media: mediaUrl,
+                    filePath: uploadedPath
                 });
                 navigate("/");
             } catch (error) {
@@ -272,4 +281,4 @@ function CreatePost(){
     }
 }
 
-export {HomePage, ContactPage, TestPage, Register, Login, Profile, NotFound, CreatePost}
+export {HomePage, ContactPage, TestPage, Register, Login, Profile, NotFound, CreatePost, Post}

@@ -4,6 +4,7 @@ import { BrowserRouter,  Route, Routes, NavLink} from 'react-router';
 import { onAuthStateChanged, signOut  } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from 'react';
+import { supabase } from "../supabase.js";
 
 function GetAllData() {
   const [docs, setDocs] = useState([]);
@@ -28,7 +29,7 @@ function GetAllData() {
   return (
     <>
       {docs.map(doc => 
-        <NavLink key={doc.id} className="test-container" to={{pathname: "/testPage", search: `id=${doc.id}`,}}>
+        <NavLink key={doc.id} className="test-container" to={{pathname: "/post", search: `id=${doc.id}`,}}>
           <h2>title: {doc.data().title}</h2>
           <p>id: {doc.id}</p>
           <p>user: {doc.data().user}</p>
@@ -58,6 +59,11 @@ function GetSingleData({ documentName }) {
     fetchData();
   }, [documentName, data]);
   async function  DeletePost() {
+      if (data.data().filePath) {
+        await supabase.storage
+          .from("MediaPost")
+          .remove([data.data().filePath]);
+      }
       await deleteDoc(doc(db, "Posts", documentName));
       setData(null);
   }
