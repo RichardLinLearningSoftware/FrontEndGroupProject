@@ -207,7 +207,7 @@ function CreatePost(){
             <>
                 <form onSubmit={CreatePost}>
                     <input type="text" onChange={(e) => setTitle(e.target.value)} placeholder="Title" required/>
-                    <input type="file" accept="image/*,video/*,audio/*,.glb,.gltf" onChange={(e) => setFiles([...e.target.files])}/>
+                    <input type="file" accept="image/*,video/*,audio/*,.glb,.gltf" onChange={(e) => setFiles(e.target.files[0])}/>
                     <textarea onChange={(e) => setDesc(e.target.value)} placeholder="Description"></textarea>
                     <button type="submit">Submit</button>
                 </form>
