@@ -5,6 +5,8 @@ import { onAuthStateChanged, signOut  } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from 'react';
 import { supabase } from "../supabase.js";
+import { Canvas } from "@react-three/fiber";
+import { useGLTF, OrbitControls } from "@react-three/drei";
 
 function GetAllData() {
   const [docs, setDocs] = useState([]);
@@ -29,7 +31,8 @@ function GetAllData() {
   function RenderMedia(media){
     const type  = media.media.fileType;
     const mediaUrl = media.media.media;
-    if(media){
+    console.log(media);
+    if(type != null){
       if(type?.startsWith("image/")){
         return (
           <img src={mediaUrl}/>
@@ -46,6 +49,15 @@ function GetAllData() {
         return (
           <audio src={mediaUrl} controls/>
         );
+      }else{
+        const { scene } = useGLTF(mediaUrl);
+        return(
+          <Canvas style={{ width: "20vw", height: "20vw" }} className="modelViewPortSmall">
+            <ambientLight intensity={2}/>
+            <primitive object={scene} />
+            <OrbitControls/>
+          </Canvas>
+        )
       }
     }
   }
@@ -98,7 +110,8 @@ function GetSingleData({ documentName }) {
   function RenderMedia(media){
     const type  = media.media.fileType;
     const mediaUrl = media.media.media;
-    if(media){
+    console.log(media);
+    if(type != null){
       if(type?.startsWith("image/")){
         return (
           <img src={mediaUrl}/>
@@ -115,6 +128,15 @@ function GetSingleData({ documentName }) {
         return (
           <audio src={mediaUrl} controls/>
         );
+      }else{
+        const { scene } = useGLTF(mediaUrl);
+        return(
+          <Canvas style={{ width: "100%", height: "500px" }} className="modelViewPortSmall">
+            <ambientLight intensity={2}/>
+            <primitive object={scene} />
+            <OrbitControls/>
+          </Canvas>
+        )
       }
     }
   }
