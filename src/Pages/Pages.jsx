@@ -204,7 +204,7 @@ function Profile(){
 function CreatePost(){
     const navigate = useNavigate();
     const [title, setTitle] = useState("");
-    const [files, setFiles] = useState([]);
+    const [files, setFiles] = useState(null);
     const [desc, setDesc] = useState("");
     const [user, setUser] = useState(null);
     const authUser = auth.currentUser;
@@ -225,6 +225,7 @@ function CreatePost(){
 
             let uploadedPath = null;
             let mediaUrl = null;
+            let fileType = null;
             try {
                 if (files) {
                     const fileName = Date.now()+"-"+files.name;
@@ -239,6 +240,7 @@ function CreatePost(){
                         .from("MediaPost")
                         .getPublicUrl(uploadedPath);
                     mediaUrl = data.publicUrl;
+                    fileType = files.type;
                 }
                 await addDoc(collection(db, "Posts"), {
                     user: user.data().name,
@@ -247,6 +249,7 @@ function CreatePost(){
                     description: desc,
                     creationDate: Date.now(),
                     media: mediaUrl,
+                    fileType: fileType,
                     filePath: uploadedPath
                 });
                 navigate("/");

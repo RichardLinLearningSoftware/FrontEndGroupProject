@@ -26,6 +26,16 @@ function GetAllData() {
     )
   }
 
+  function RenderMedia(media){
+    if(media){
+        if(media.media.fileType?.startsWith("image/")){
+          return (
+            <img src={media.media.media}/>
+          );
+        }
+    }
+  }
+
   return (
     <>
       {docs.map(doc => 
@@ -35,6 +45,7 @@ function GetAllData() {
           <p>user: {doc.data().user}</p>
           <p>uid: {doc.data().uid}</p>
           <p>desc: {doc.data().description}</p>
+          <RenderMedia media = {doc.data()}/>
         </NavLink>
       )}
     </>
