@@ -5,6 +5,7 @@ import { onAuthStateChanged, signOut  } from "firebase/auth";
 import { GetAllData, GetSingleData, GetUserProfile } from './Content.jsx';
 import { collection, doc, getDoc, getDocs, getFirestore, where, addDoc, deleteDoc, updateDoc, setDoc } from "firebase/firestore";
 import { auth, db } from "../firebase.js";
+import { supabase } from '../supabase.js';
 
 function NotFound(){
     const navigate = useNavigate();
@@ -36,9 +37,27 @@ function ContactPage(){
 }
 
 function TestPage(){
-    const [param] = useSearchParams();
+    const [files, setFiles] = useState([]);
+    async function testUpload(e) {
+        e.preventDefault();
+        const { data, error } = await supabase.storage
+            .from("MediaPost")
+            .upload(`test/${files.name}`, files);
+
+        console.log(data);
+        if (error) {
+            console.error("Upload error:", error);
+        }
+    }
+
     return(
-        <GetSingleData documentName = {param.get("id")}/>
+        <>
+            <h2>test media post</h2>
+            <form onSubmit={testUpload}>
+                <input type="file" accept="image/*,video/*,audio/*,.glb,.gltf" onChange={(e) => setFiles(e.target.files[0])}/>
+                <button type="submit">Submit</button>
+            </form>
+        </>
     );
 }
 
