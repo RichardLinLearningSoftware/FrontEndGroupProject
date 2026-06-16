@@ -84,7 +84,7 @@ function GetSingleData({ documentName }) {
       }
     }
     fetchData();
-  }, [documentName, data]);
+  }, [documentName]);
   async function  DeletePost() {
       if (data.data().filePath) {
         await supabase.storage
@@ -93,6 +93,30 @@ function GetSingleData({ documentName }) {
       }
       await deleteDoc(doc(db, "Posts", documentName));
       setData(null);
+  }
+
+  function RenderMedia(media){
+    const type  = media.media.fileType;
+    const mediaUrl = media.media.media;
+    if(media){
+      if(type?.startsWith("image/")){
+        return (
+          <img src={mediaUrl}/>
+        );
+      }
+
+      if (type?.startsWith("video/")) {
+        return (
+            <video src={mediaUrl} controls/>
+          );
+      }
+
+      if (type?.startsWith("audio/")) {
+        return (
+          <audio src={mediaUrl} controls/>
+        );
+      }
+    }
   }
 
   if (data) {
@@ -105,6 +129,7 @@ function GetSingleData({ documentName }) {
             <NavLink to={{pathname: "/user", search: `id=${data.data().uid}`,}} end>user: {data.data().user}</NavLink>
             <p>uid: {data.data().uid}</p>
             <p>desc: {data.data().description}</p>
+            <RenderMedia media = {data.data()}/>
             {user.uid == data.data().uid && <button onClick={DeletePost}>Delete post</button>}
           </div>
         </>
@@ -118,6 +143,7 @@ function GetSingleData({ documentName }) {
             <NavLink to={{pathname: "/user", search: `id=${data.data().uid}`,}} end>user: {data.data().user}</NavLink>
             <p>uid: {data.data().uid}</p>
             <p>desc: {data.data().description}</p>
+            <RenderMedia media = {data.data()}/>
           </div>
         </>
       );
