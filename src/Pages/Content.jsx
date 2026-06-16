@@ -65,7 +65,7 @@ function GetAllData() {
   return (
     <>
       {docs.map(doc =>
-        <div className="test-container" key={doc.id}>
+        <div className="post" key={doc.id}>
           <NavLink to={{pathname: "/post", search: `id=${doc.id}`,}}>
             <h2>title: {doc.data().title}</h2>
             <p>id: {doc.id}</p>
@@ -145,7 +145,7 @@ function GetSingleData({ documentName }) {
     if(user){
       return (
         <>
-          <div className="test-container">
+          <div className="view-post">
             <h2>title: {data.data().title}</h2>
             <p>id: {data.id}</p>
             <NavLink to={{pathname: "/user", search: `id=${data.data().uid}`,}} end>user: {data.data().user}</NavLink>

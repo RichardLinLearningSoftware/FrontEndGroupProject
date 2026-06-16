@@ -3,12 +3,28 @@
     display: flex;
 }
 
-.test-container{
+.post{
     padding: 10px;
     background-color: lightgray;
     text-decoration: none;
     color: black;
     display: block;
+    width: 50%;
+}
+
+.view-post{
+    padding: 10px;
+    background-color: lightgray;
+    text-decoration: none;
+    color: black;
+    display: block;
+}
+
+.postContainer{
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 form{
