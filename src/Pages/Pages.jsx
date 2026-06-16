@@ -35,15 +35,17 @@ function ContactPage(){
         </>
     );
 }
+//image/jpeg
 
 function TestPage(){
     const [files, setFiles] = useState([]);
     async function testUpload(e) {
         e.preventDefault();
+
+        const fileName = Date.now() + "-" + files.name;
         const { data, error } = await supabase.storage
             .from("MediaPost")
-            .upload(`test/${files.name}`, files);
-
+            .upload("public/" + fileName, files);
         console.log(data);
         if (error) {
             console.error("Upload error:", error);
