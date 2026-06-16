@@ -27,26 +27,42 @@ function GetAllData() {
   }
 
   function RenderMedia(media){
+    const type  = media.media.fileType;
+    const mediaUrl = media.media.media;
     if(media){
-        if(media.media.fileType?.startsWith("image/")){
-          return (
-            <img src={media.media.media}/>
+      if(type?.startsWith("image/")){
+        return (
+          <img src={mediaUrl}/>
+        );
+      }
+
+      if (type?.startsWith("video/")) {
+        return (
+            <video src={mediaUrl} controls/>
           );
-        }
+      }
+
+      if (type?.startsWith("audio/")) {
+        return (
+          <audio src={mediaUrl} controls/>
+        );
+      }
     }
   }
 
   return (
     <>
-      {docs.map(doc => 
-        <NavLink key={doc.id} className="test-container" to={{pathname: "/post", search: `id=${doc.id}`,}}>
-          <h2>title: {doc.data().title}</h2>
-          <p>id: {doc.id}</p>
-          <p>user: {doc.data().user}</p>
-          <p>uid: {doc.data().uid}</p>
-          <p>desc: {doc.data().description}</p>
+      {docs.map(doc =>
+        <div className="test-container" key={doc.id}>
+          <NavLink to={{pathname: "/post", search: `id=${doc.id}`,}}>
+            <h2>title: {doc.data().title}</h2>
+            <p>id: {doc.id}</p>
+            <p>user: {doc.data().user}</p>
+            <p>uid: {doc.data().uid}</p>
+            <p>desc: {doc.data().description}</p>
+          </NavLink>
           <RenderMedia media = {doc.data()}/>
-        </NavLink>
+        </div>
       )}
     </>
   );
