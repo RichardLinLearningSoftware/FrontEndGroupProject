@@ -110,14 +110,14 @@ function GetSingleData({ documentName }) {
     if (user) {
       return (
         <>
-          <div className="view-post">
+          <div className="post">
+            {user.uid == data.data().uid && <button onClick={DeletePost}>Delete post</button>}
             <h2>title: {data.data().title}</h2>
             <p>id: {data.id}</p>
             <NavLink to={{ pathname: "/user", search: `id=${data.data().uid}`, }} end>user: {data.data().user}</NavLink>
             <p>uid: {data.data().uid}</p>
             <p>desc: {data.data().description}</p>
             <RenderMedia media={data.data()} />
-            {user.uid == data.data().uid && <button onClick={DeletePost}>Delete post</button>}
           </div>
         </>
       );

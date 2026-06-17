@@ -68,7 +68,9 @@ function Post(){
     const [param] = useSearchParams();
 
     return(
-        <GetSingleData documentName = {param.get("id")}/>
+        <div className='postContainer'>
+            <GetSingleData documentName = {param.get("id")}/>
+        </div>
     );
 }
 

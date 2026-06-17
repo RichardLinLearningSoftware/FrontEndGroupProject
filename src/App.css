@@ -8,16 +8,9 @@
     background-color: lightgray;
     text-decoration: none;
     color: black;
-    display: block;
+    display: flex;
+    flex-direction: column;
     width: 50%;
-}
-
-.view-post{
-    padding: 10px;
-    background-color: lightgray;
-    text-decoration: none;
-    color: black;
-    display: block;
 }
 
 .postContainer{
