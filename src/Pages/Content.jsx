@@ -270,7 +270,7 @@ function GetUserProfile({ userId }) {
     if (user) {
       return (
         <>
-          <div className="test-container">
+          <div>
             <h2>{data.data().name || "No name"}</h2>
             <p>{data.id}</p>
             <form onSubmit={UpdateProfile}>
@@ -280,7 +280,10 @@ function GetUserProfile({ userId }) {
           </div>
 
           <h2>User post</h2>
-          <GetUserSpecificPost userId={userId} />
+          <div className="flex-row-container">
+            <GetUserSpecificPost userId={userId} />
+            <GetUserSpecificComment userId={userId}/>
+          </div>
         </>
       );
     }else{
@@ -321,7 +324,7 @@ function GetUserSpecificPost({ userId }) {
   if (docs.filter(doc => doc.data().uid == userId).length == 0) {
     return (
       <>
-        <div className="post">
+        <div className="test-container">
           <h2>User havent post anything</h2>
         </div>
       </>
@@ -329,18 +332,20 @@ function GetUserSpecificPost({ userId }) {
   }
   return (
     <>
-      {docs.filter(doc => doc.data().uid == userId).map(doc =>
-        <div className="post" key={doc.id}>
-          <NavLink to={{ pathname: "/post", search: `id=${doc.id}`, }}>
-            <h2>title: {doc.data().title}</h2>
-            <p>id: {doc.id}</p>
-            <p>user: {doc.data().user}</p>
-            <p>uid: {doc.data().uid}</p>
-            <p>desc: {doc.data().description}</p>
-          </NavLink>
-          <RenderMedia media={doc.data()} />
-        </div>
-      )}
+      <div>
+        {docs.filter(doc => doc.data().uid == userId).map(doc =>
+          <div className="test-container" key={doc.id}>
+            <NavLink to={{ pathname: "/post", search: `id=${doc.id}` }}>
+              <h2>title: {doc.data().title}</h2>
+              <p>id: {doc.id}</p>
+              <p>user: {doc.data().user}</p>
+              <p>uid: {doc.data().uid}</p>
+              <p>desc: {doc.data().description}</p>
+            </NavLink>
+            <RenderMedia media={doc.data()} />
+          </div>
+        )}
+      </div>
     </>
   );
 }
@@ -349,7 +354,7 @@ function GetUserSpecificComment({ userId }) {
   const [docs, setDocs] = useState([]);
   useEffect(() => {
     async function fetchData() {
-      const querySnapshot = await getDocs(collection(db, "postComments"));
+      const querySnapshot = await getDocs(collection(db, "PostComments"));
       setDocs(querySnapshot.docs);
     }
     fetchData();
@@ -358,26 +363,23 @@ function GetUserSpecificComment({ userId }) {
   if (docs.filter(doc => doc.data().uid == userId).length == 0) {
     return (
       <>
-        <div className="post">
-          <h2>User havent post anything</h2>
+        <div className="comment-container">
+          <h2>User havent commented anything</h2>
         </div>
       </>
     )
   }
   return (
     <>
-      {docs.filter(doc => doc.data().uid == userId).map(doc =>
-        <div className="post" key={doc.id}>
-          <NavLink to={{ pathname: "/post", search: `id=${doc.id}`, }}>
-            <h2>title: {doc.data().title}</h2>
-            <p>id: {doc.id}</p>
-            <p>user: {doc.data().user}</p>
-            <p>uid: {doc.data().uid}</p>
-            <p>desc: {doc.data().description}</p>
-          </NavLink>
-          <RenderMedia media={doc.data()} />
-        </div>
-      )}
+      <div>
+        {docs.filter(doc => doc.data().uid == userId).map(doc =>
+          <div className="comment-container" key={doc.id}>
+            <NavLink to={{ pathname: "/post", search: `id=${doc.data().postId}` }}>{doc.data().postId}</NavLink>
+            <p>{doc.data().comment}</p>
+            <RenderMedia media={doc.data()} />
+          </div>
+        )}
+      </div>
     </>
   );
 }

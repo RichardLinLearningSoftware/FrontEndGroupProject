@@ -10,9 +10,8 @@
     color: black;
     display: flex;
     flex-direction: column;
-    width: 50%;
+    width: 45%;
 }
-
 .postContainer{
     align-items: center;
     display: flex;
@@ -20,8 +19,28 @@
     gap: 20px;
 }
 
+.test-container{
+    padding: 10px;
+    background-color: lightgray;
+    text-decoration: none;
+    color: black;
+    display: flex;
+    flex-direction: column;
+}
+
 form{
     display: flex;
     flex-direction: column;
     width: 40%;
+}
+
+.flex-row-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+
+}
+
+.comment-container{
+    background-color: lightgray;
 }
