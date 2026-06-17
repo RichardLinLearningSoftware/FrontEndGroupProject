@@ -104,9 +104,7 @@ function GetSingleData({ documentName }) {
         .from("MediaPost")
         .remove([data.data().filePath]);
     }
-
     const comments = await getDocs(query(collection(db, "PostComments"), where("postId", "==", data.id)));
-    
     const deletePromises = comments.docs.map(comment =>
       deleteDoc(doc(db, "PostComments", comment.id))
     );
@@ -133,7 +131,7 @@ function GetSingleData({ documentName }) {
       return (
         <>
           <div className="post">
-            <button onClick={DeletePost}>Delete post</button>
+            {user.uid == data.data().uid && <button onClick={DeletePost}>Delete post</button>}
             <h2>title: {data.data().title}</h2>
             <p>id: {data.id}</p>
             <NavLink to={{ pathname: "/user", search: `id=${data.data().uid}`, }} end>user: {data.data().user}</NavLink>
@@ -176,10 +174,15 @@ function GetSingleData({ documentName }) {
 }
 
 function RenderComments({id, refresh}){
+  const [user, setUser] = useState(null);
+  const authUser = auth.currentUser;
   const [docs, setDocs] = useState([]);
   const [ deleteRefresh, setDeleteRefresh] = useState(0);
   useEffect(() => {
     async function LoadComments() {
+      onAuthStateChanged(auth, (authUser) => {
+        setUser(authUser);
+      });
       const querySnapshot = await getDocs(query(collection(db, "PostComments"), where("postId", "==", id)));
       setDocs(querySnapshot.docs);
     }
@@ -200,17 +203,30 @@ function RenderComments({id, refresh}){
       </>
     )
   }
-  return (
-    <>
-      {docs.map(doc =>
-        <div className="post" key={doc.id}>
-            <button onClick={() => DeleteComment(doc.id)}>Delete comment</button>
-            <p>user: {doc.data().uid}</p>
-            <p>{doc.data().comment}</p>
-        </div>
-      )}
-    </>
-  );
+  if(user){
+    return (
+      <>
+        {docs.map(doc =>
+          <div className="post" key={doc.id}>
+              {user.uid == doc.data().uid && <button onClick={() => DeleteComment(doc.id)}>Delete comment</button>}
+              <p>user: {doc.data().uid}</p>
+              <p>{doc.data().comment}</p>
+          </div>
+        )}
+      </>
+    );
+  }else{
+    return (
+      <>
+        {docs.map(doc =>
+          <div className="post" key={doc.id}>
+              <p>user: {doc.data().uid}</p>
+              <p>{doc.data().comment}</p>
+          </div>
+        )}
+      </>
+    );
+  }
 }
 
 function GetUserProfile({ userId }) {
@@ -297,6 +313,43 @@ function GetUserSpecificPost({ userId }) {
   useEffect(() => {
     async function fetchData() {
       const querySnapshot = await getDocs(collection(db, "Posts"));
+      setDocs(querySnapshot.docs);
+    }
+    fetchData();
+  }, []);
+
+  if (docs.filter(doc => doc.data().uid == userId).length == 0) {
+    return (
+      <>
+        <div className="post">
+          <h2>User havent post anything</h2>
+        </div>
+      </>
+    )
+  }
+  return (
+    <>
+      {docs.filter(doc => doc.data().uid == userId).map(doc =>
+        <div className="post" key={doc.id}>
+          <NavLink to={{ pathname: "/post", search: `id=${doc.id}`, }}>
+            <h2>title: {doc.data().title}</h2>
+            <p>id: {doc.id}</p>
+            <p>user: {doc.data().user}</p>
+            <p>uid: {doc.data().uid}</p>
+            <p>desc: {doc.data().description}</p>
+          </NavLink>
+          <RenderMedia media={doc.data()} />
+        </div>
+      )}
+    </>
+  );
+}
+
+function GetUserSpecificComment({ userId }) {
+  const [docs, setDocs] = useState([]);
+  useEffect(() => {
+    async function fetchData() {
+      const querySnapshot = await getDocs(collection(db, "postComments"));
       setDocs(querySnapshot.docs);
     }
     fetchData();
