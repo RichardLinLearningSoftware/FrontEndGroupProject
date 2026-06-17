@@ -104,6 +104,14 @@ function GetSingleData({ documentName }) {
         .from("MediaPost")
         .remove([data.data().filePath]);
     }
+
+    const comments = await getDocs(query(collection(db, "PostComments"), where("postId", "==", data.id)));
+    
+    const deletePromises = comments.docs.map(comment =>
+      deleteDoc(doc(db, "PostComments", comment.id))
+    );
+    await Promise.all(deletePromises);
+
     await deleteDoc(doc(db, "Posts", documentName));
     setData(null);
   }
