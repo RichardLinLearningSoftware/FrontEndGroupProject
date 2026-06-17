@@ -171,29 +171,20 @@ function GetUserProfile({ userId }) {
   }
 
   if (data && userExits) {
-    if (user && userId == user.uid) {
+    if (user) {
       return (
         <>
           <div className="test-container">
             <h2>{data.data().name || "No name"}</h2>
             <p>{data.id}</p>
-            <form onSubmit={UpdateProfile}>
-              <input type="text" value={bio} onChange={(e) => setBio(e.target.value)} placeholder="About me" />
-              <button type="submit">Update profile</button>
-            </form>
-          </div>
-
-          <h2>User post</h2>
-          <GetUserSpecificPost userId = {userId}/>
-        </>
-      );
-    } else {
-      return (
-        <>
-          <div className="test-container">
-            <h2>{data.data().name || "No name"}</h2>
-            <p>{data.id}</p>
-            <p>{data.data().bio || "No Description"}</p>
+            {userId == user.uid ? 
+              <form onSubmit={UpdateProfile}>
+                <input type="text" value={bio} onChange={(e) => setBio(e.target.value)} placeholder="About me" />
+                <button type="submit">Update profile</button>
+              </form>
+            :
+              <p>{data.data().bio || "No Description"}</p>
+            }
           </div>
 
           <h2>User post</h2>
