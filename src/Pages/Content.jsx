@@ -1,4 +1,4 @@
-import { collection, doc, getDoc, getDocs, getFirestore, where, addDoc, deleteDoc, updateDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, getFirestore, where, addDoc, deleteDoc, updateDoc, query } from "firebase/firestore";
 import { firebaseConfig, app, db, auth } from "../firebase.js";
 import { BrowserRouter, Route, Routes, NavLink } from 'react-router';
 import { onAuthStateChanged, signOut } from "firebase/auth";
@@ -80,9 +80,11 @@ function GetAllData() {
 
 function GetSingleData({ documentName }) {
   const navigate = useNavigate();
+  const [comment, setComment] = useState("");
   const [data, setData] = useState();
   const [user, setUser] = useState(null);
   const authUser = auth.currentUser;
+  const [commentRefresh, setCommentRefresh] = useState(0);
   useEffect(() => {
     async function fetchData() {
       onAuthStateChanged(auth, (authUser) => {
@@ -106,12 +108,24 @@ function GetSingleData({ documentName }) {
     setData(null);
   }
 
+  async function CreateComment(e, id) {
+    e.preventDefault();
+    await addDoc(collection(db, "PostComments"), {
+      uid: user.uid,
+      comment: comment,
+      postId: id
+    });
+    
+    setComment("");
+    setCommentRefresh(commentRefresh + 1);
+  }
+
   if (data) {
-    if (user) {
+    if(user){
       return (
         <>
           <div className="post">
-            {user.uid == data.data().uid && <button onClick={DeletePost}>Delete post</button>}
+            <button onClick={DeletePost}>Delete post</button>
             <h2>title: {data.data().title}</h2>
             <p>id: {data.id}</p>
             <NavLink to={{ pathname: "/user", search: `id=${data.data().uid}`, }} end>user: {data.data().user}</NavLink>
@@ -119,6 +133,26 @@ function GetSingleData({ documentName }) {
             <p>desc: {data.data().description}</p>
             <RenderMedia media={data.data()} />
           </div>
+          <form onSubmit={(e) => CreateComment(e, data.id)}>
+            <textarea value={comment} id="commentArea" onChange={(e) => setComment(e.target.value)} placeholder="Comment" required></textarea>
+            <button type="submit">Submit</button>
+          </form>
+          <RenderComments id={data.id} refresh={commentRefresh}/>
+        </>
+      );
+    }else{
+      return (
+        <>
+          <div className="post">
+            <h2>title: {data.data().title}</h2>
+            <p>id: {data.id}</p>
+            <NavLink to={{ pathname: "/user", search: `id=${data.data().uid}`, }} end>user: {data.data().user}</NavLink>
+            <p>uid: {data.data().uid}</p>
+            <p>desc: {data.data().description}</p>
+            <RenderMedia media={data.data()} />
+          </div>
+
+          <RenderComments id={data.id} refresh={commentRefresh}/>
         </>
       );
     }
@@ -131,6 +165,44 @@ function GetSingleData({ documentName }) {
       </>
     )
   }
+}
+
+function RenderComments({id, refresh}){
+  const [docs, setDocs] = useState([]);
+  const [ deleteRefresh, setDeleteRefresh] = useState(0);
+  useEffect(() => {
+    async function LoadComments() {
+      const querySnapshot = await getDocs(query(collection(db, "PostComments"), where("postId", "==", id)));
+      setDocs(querySnapshot.docs);
+    }
+    LoadComments();
+  }, [id, refresh, deleteRefresh]);
+
+  async function DeleteComment(id) {
+    await deleteDoc(doc(db, "PostComments", id));
+    setDeleteRefresh(deleteRefresh + 1);
+  }
+
+  if (docs.length == 0) {
+    return (
+      <>
+        <div className="test-container">
+          <h2>No comments yet</h2>
+        </div>
+      </>
+    )
+  }
+  return (
+    <>
+      {docs.map(doc =>
+        <div className="post" key={doc.id}>
+            <button onClick={() => DeleteComment(doc.id)}>Delete comment</button>
+            <p>user: {doc.data().uid}</p>
+            <p>{doc.data().comment}</p>
+        </div>
+      )}
+    </>
+  );
 }
 
 function GetUserProfile({ userId }) {
@@ -177,18 +249,27 @@ function GetUserProfile({ userId }) {
           <div className="test-container">
             <h2>{data.data().name || "No name"}</h2>
             <p>{data.id}</p>
-            {userId == user.uid ? 
-              <form onSubmit={UpdateProfile}>
-                <input type="text" value={bio} onChange={(e) => setBio(e.target.value)} placeholder="About me" />
-                <button type="submit">Update profile</button>
-              </form>
-            :
-              <p>{data.data().bio || "No Description"}</p>
-            }
+            <form onSubmit={UpdateProfile}>
+              <input type="text" value={bio} onChange={(e) => setBio(e.target.value)} placeholder="About me" />
+              <button type="submit">Update profile</button>
+            </form>
           </div>
 
           <h2>User post</h2>
-          <GetUserSpecificPost userId = {userId}/>
+          <GetUserSpecificPost userId={userId} />
+        </>
+      );
+    }else{
+      return (
+        <>
+          <div className="test-container">
+            <h2>{data.data().name || "No name"}</h2>
+            <p>{data.id}</p>
+            <p>{data.data().bio || "No Description"}</p>
+          </div>
+
+          <h2>User post</h2>
+          <GetUserSpecificPost userId={userId} />
         </>
       );
     }
@@ -203,7 +284,7 @@ function GetUserProfile({ userId }) {
   }
 }
 
-function GetUserSpecificPost({userId}) {
+function GetUserSpecificPost({ userId }) {
   const [docs, setDocs] = useState([]);
   useEffect(() => {
     async function fetchData() {
@@ -213,8 +294,8 @@ function GetUserSpecificPost({userId}) {
     fetchData();
   }, []);
 
-  if(docs.filter(doc => doc.data().uid == userId).length == 0){
-    return(
+  if (docs.filter(doc => doc.data().uid == userId).length == 0) {
+    return (
       <>
         <div className="post">
           <h2>User havent post anything</h2>
