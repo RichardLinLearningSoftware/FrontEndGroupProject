@@ -412,7 +412,6 @@ function FindPost({ search }) {
   }
   return (
     <>
-      <h2>{search}</h2>
       <div>
         {docs.filter(doc => doc.data().title.replace(/\s/g, '').toLowerCase().includes(search.replace(/\s/g, '').toLowerCase())).map(doc =>
           <div className="test-container" key={doc.id}>
@@ -431,4 +430,75 @@ function FindPost({ search }) {
   );
 }
 
-export { GetAllData, GetSingleData, GetUserProfile, FindPost }
+function FindUser({ search }) {
+  const [docs, setDocs] = useState([]);
+  useEffect(() => {
+    async function fetchData() {
+      const querySnapshot = await getDocs(collection(db, "Users"));
+      setDocs(querySnapshot.docs);
+    }
+    fetchData();
+  }, []);
+
+  if (docs.filter(doc => doc.data().name.replace(/\s/g, '').toLowerCase().includes(search.replace(/\s/g, '').toLowerCase())).length == 0) {
+    return (
+      <>
+        <div className="test-container">
+          <h2>No post found</h2>
+        </div>
+      </>
+    )
+  }
+  return (
+    <>
+      <div>
+        {docs.filter(doc => doc.data().name.replace(/\s/g, '').toLowerCase().includes(search.replace(/\s/g, '').toLowerCase())).map(doc =>
+          <div className="test-container" key={doc.id}>
+            <NavLink to={{ pathname: "/user", search: `id=${doc.id}` }}>
+              <h2>{doc.data().name || "No name"}</h2>
+              <p>{doc.data().bio || "No Description"}</p>
+            </NavLink>
+            <RenderMedia media={doc.data()} />
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
+
+function FindComment({ search }) {
+  const [docs, setDocs] = useState([]);
+  useEffect(() => {
+    async function fetchData() {
+      const querySnapshot = await getDocs(collection(db, "PostComments"));
+      setDocs(querySnapshot.docs);
+    }
+    fetchData();
+  }, []);
+
+  if (docs.filter(doc => doc.data().comment.replace(/\s/g, '').toLowerCase().includes(search.replace(/\s/g, '').toLowerCase())).length == 0) {
+    return (
+      <>
+        <div className="test-container">
+          <h2>No comment found</h2>
+        </div>
+      </>
+    )
+  }
+  return (
+    <>
+      <div>
+        {docs.filter(doc => doc.data().comment.replace(/\s/g, '').toLowerCase().includes(search.replace(/\s/g, '').toLowerCase())).map(doc =>
+          <div className="post" key={doc.id}>
+            <NavLink to={{pathname: "/user", search: `id=${doc.data().uid}`,}} end>User: {doc.data().uid}</NavLink>
+            <p>{doc.data().comment}</p>
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
+
+
+
+export { GetAllData, GetSingleData, GetUserProfile, FindPost, FindUser, FindComment }
