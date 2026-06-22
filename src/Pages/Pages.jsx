@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { BrowserRouter,  Route, Routes, NavLink, useSearchParams, redirect, useNavigate } from 'react-router';
 import { onAuthStateChanged, signOut  } from "firebase/auth";
-import { GetAllData, GetSingleData, GetUserProfile } from './Content.jsx';
+import { GetAllData, GetSingleData, GetUserProfile, FindPost, FindUser, FindComment } from './Content.jsx';
 import { collection, doc, getDoc, getDocs, getFirestore, where, addDoc, deleteDoc, updateDoc, setDoc } from "firebase/firestore";
 import { auth, db } from "../firebase.js";
 import { supabase } from '../supabase.js';
@@ -25,6 +25,20 @@ function HomePage(){
             <div className='postContainer'>
                 <GetAllData/>
             </div>
+        </>
+    );
+}
+
+function Search(){
+    const [param] = useSearchParams();
+    return(
+        <>  
+            <h2>Posts</h2>
+            <FindPost search = {param.get("id")}/>
+            <h2>Users</h2>
+            <FindUser search = {param.get("id")}/>
+            <h2>Comments</h2>
+            <FindComment search = {param.get("id")}/>
         </>
     );
 }
@@ -288,4 +302,6 @@ function CreatePost(){
     }
 }
 
-export {HomePage, ContactPage, TestPage, Register, Login, Profile, NotFound, CreatePost, Post}
+
+
+export {HomePage, ContactPage, TestPage, Register, Login, Profile, NotFound, CreatePost, Post, Search }

@@ -209,7 +209,7 @@ function RenderComments({id, refresh}){
         {docs.map(doc =>
           <div className="post" key={doc.id}>
               {user.uid == doc.data().uid && <button onClick={() => DeleteComment(doc.id)}>Delete comment</button>}
-              <p>user: {doc.data().uid}</p>
+              <NavLink to={{pathname: "/user", search: `id=${doc.data().uid}`,}} end>User: {doc.data().uid}</NavLink>
               <p>{doc.data().comment}</p>
           </div>
         )}
@@ -273,10 +273,14 @@ function GetUserProfile({ userId }) {
           <div>
             <h2>{data.data().name || "No name"}</h2>
             <p>{data.id}</p>
-            <form onSubmit={UpdateProfile}>
-              <input type="text" value={bio} onChange={(e) => setBio(e.target.value)} placeholder="About me" />
-              <button type="submit">Update profile</button>
-            </form>
+            {user.uid == data.id ? 
+              <form onSubmit={UpdateProfile}>
+                <input type="text" value={bio} onChange={(e) => setBio(e.target.value)} placeholder="About me" />
+                <button type="submit">Update profile</button>
+              </form>
+            :
+              <p>{data.data().bio}</p>
+            }
           </div>
 
           <h2>User post</h2>
@@ -296,7 +300,10 @@ function GetUserProfile({ userId }) {
           </div>
 
           <h2>User post</h2>
-          <GetUserSpecificPost userId={userId} />
+          <div className="flex-row-container">
+            <GetUserSpecificPost userId={userId} />
+            <GetUserSpecificComment userId={userId}/>
+          </div>
         </>
       );
     }
@@ -384,4 +391,114 @@ function GetUserSpecificComment({ userId }) {
   );
 }
 
-export { GetAllData, GetSingleData, GetUserProfile }
+function FindPost({ search }) {
+  const [docs, setDocs] = useState([]);
+  useEffect(() => {
+    async function fetchData() {
+      const querySnapshot = await getDocs(collection(db, "Posts"));
+      setDocs(querySnapshot.docs);
+    }
+    fetchData();
+  }, []);
+
+  if (docs.filter(doc => doc.data().title.replace(/\s/g, '').toLowerCase().includes(search.replace(/\s/g, '').toLowerCase())).length == 0) {
+    return (
+      <>
+        <div className="test-container">
+          <h2>No post found</h2>
+        </div>
+      </>
+    )
+  }
+  return (
+    <>
+      <div>
+        {docs.filter(doc => doc.data().title.replace(/\s/g, '').toLowerCase().includes(search.replace(/\s/g, '').toLowerCase())).map(doc =>
+          <div className="test-container" key={doc.id}>
+            <NavLink to={{ pathname: "/post", search: `id=${doc.id}` }}>
+              <h2>title: {doc.data().title}</h2>
+              <p>id: {doc.id}</p>
+              <p>user: {doc.data().user}</p>
+              <p>uid: {doc.data().uid}</p>
+              <p>desc: {doc.data().description}</p>
+            </NavLink>
+            <RenderMedia media={doc.data()} />
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
+
+function FindUser({ search }) {
+  const [docs, setDocs] = useState([]);
+  useEffect(() => {
+    async function fetchData() {
+      const querySnapshot = await getDocs(collection(db, "Users"));
+      setDocs(querySnapshot.docs);
+    }
+    fetchData();
+  }, []);
+
+  if (docs.filter(doc => doc.data().name.replace(/\s/g, '').toLowerCase().includes(search.replace(/\s/g, '').toLowerCase())).length == 0) {
+    return (
+      <>
+        <div className="test-container">
+          <h2>No post found</h2>
+        </div>
+      </>
+    )
+  }
+  return (
+    <>
+      <div>
+        {docs.filter(doc => doc.data().name.replace(/\s/g, '').toLowerCase().includes(search.replace(/\s/g, '').toLowerCase())).map(doc =>
+          <div className="test-container" key={doc.id}>
+            <NavLink to={{ pathname: "/user", search: `id=${doc.id}` }}>
+              <h2>{doc.data().name || "No name"}</h2>
+              <p>{doc.data().bio || "No Description"}</p>
+            </NavLink>
+            <RenderMedia media={doc.data()} />
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
+
+function FindComment({ search }) {
+  const [docs, setDocs] = useState([]);
+  useEffect(() => {
+    async function fetchData() {
+      const querySnapshot = await getDocs(collection(db, "PostComments"));
+      setDocs(querySnapshot.docs);
+    }
+    fetchData();
+  }, []);
+
+  if (docs.filter(doc => doc.data().comment.replace(/\s/g, '').toLowerCase().includes(search.replace(/\s/g, '').toLowerCase())).length == 0) {
+    return (
+      <>
+        <div className="test-container">
+          <h2>No comment found</h2>
+        </div>
+      </>
+    )
+  }
+  return (
+    <>
+      <div>
+        {docs.filter(doc => doc.data().comment.replace(/\s/g, '').toLowerCase().includes(search.replace(/\s/g, '').toLowerCase())).map(doc =>
+          <div className="post" key={doc.id}>
+            <NavLink to={{pathname: "/user", search: `id=${doc.data().uid}`,}} end>User: {doc.data().uid}</NavLink>
+            <p>{doc.data().comment}</p>
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
+
+
+
+export { GetAllData, GetSingleData, GetUserProfile, FindPost, FindUser, FindComment }
