@@ -300,7 +300,10 @@ function GetUserProfile({ userId }) {
           </div>
 
           <h2>User post</h2>
-          <GetUserSpecificPost userId={userId} />
+          <div className="flex-row-container">
+            <GetUserSpecificPost userId={userId} />
+            <GetUserSpecificComment userId={userId}/>
+          </div>
         </>
       );
     }
@@ -388,4 +391,44 @@ function GetUserSpecificComment({ userId }) {
   );
 }
 
-export { GetAllData, GetSingleData, GetUserProfile }
+function FindPost({ search }) {
+  const [docs, setDocs] = useState([]);
+  useEffect(() => {
+    async function fetchData() {
+      const querySnapshot = await getDocs(collection(db, "Posts"));
+      setDocs(querySnapshot.docs);
+    }
+    fetchData();
+  }, []);
+
+  if (docs.filter(doc => doc.data().title.replace(/\s/g, '').toLowerCase().includes(search.replace(/\s/g, '').toLowerCase())).length == 0) {
+    return (
+      <>
+        <div className="test-container">
+          <h2>No post found</h2>
+        </div>
+      </>
+    )
+  }
+  return (
+    <>
+      <h2>{search}</h2>
+      <div>
+        {docs.filter(doc => doc.data().title.replace(/\s/g, '').toLowerCase().includes(search.replace(/\s/g, '').toLowerCase())).map(doc =>
+          <div className="test-container" key={doc.id}>
+            <NavLink to={{ pathname: "/post", search: `id=${doc.id}` }}>
+              <h2>title: {doc.data().title}</h2>
+              <p>id: {doc.id}</p>
+              <p>user: {doc.data().user}</p>
+              <p>uid: {doc.data().uid}</p>
+              <p>desc: {doc.data().description}</p>
+            </NavLink>
+            <RenderMedia media={doc.data()} />
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
+
+export { GetAllData, GetSingleData, GetUserProfile, FindPost }

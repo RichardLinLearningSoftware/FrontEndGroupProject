@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { BrowserRouter,  Route, Routes, NavLink, useSearchParams, redirect, useNavigate } from 'react-router';
 import { onAuthStateChanged, signOut  } from "firebase/auth";
-import { GetAllData, GetSingleData, GetUserProfile } from './Content.jsx';
+import { GetAllData, GetSingleData, GetUserProfile, FindPost } from './Content.jsx';
 import { collection, doc, getDoc, getDocs, getFirestore, where, addDoc, deleteDoc, updateDoc, setDoc } from "firebase/firestore";
 import { auth, db } from "../firebase.js";
 import { supabase } from '../supabase.js';
@@ -26,6 +26,13 @@ function HomePage(){
                 <GetAllData/>
             </div>
         </>
+    );
+}
+
+function Search(){
+    const [param] = useSearchParams();
+    return(
+        <FindPost search = {param.get("id")}/>
     );
 }
 
@@ -288,4 +295,6 @@ function CreatePost(){
     }
 }
 
-export {HomePage, ContactPage, TestPage, Register, Login, Profile, NotFound, CreatePost, Post}
+
+
+export {HomePage, ContactPage, TestPage, Register, Login, Profile, NotFound, CreatePost, Post, Search }
