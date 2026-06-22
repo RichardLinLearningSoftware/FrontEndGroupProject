@@ -209,7 +209,7 @@ function RenderComments({id, refresh}){
         {docs.map(doc =>
           <div className="post" key={doc.id}>
               {user.uid == doc.data().uid && <button onClick={() => DeleteComment(doc.id)}>Delete comment</button>}
-              <p>user: {doc.data().uid}</p>
+              <NavLink to={{pathname: "/user", search: `id=${doc.data().uid}`,}} end>User: {doc.data().uid}</NavLink>
               <p>{doc.data().comment}</p>
           </div>
         )}
@@ -273,10 +273,14 @@ function GetUserProfile({ userId }) {
           <div>
             <h2>{data.data().name || "No name"}</h2>
             <p>{data.id}</p>
-            <form onSubmit={UpdateProfile}>
-              <input type="text" value={bio} onChange={(e) => setBio(e.target.value)} placeholder="About me" />
-              <button type="submit">Update profile</button>
-            </form>
+            {user.uid == data.id ? 
+              <form onSubmit={UpdateProfile}>
+                <input type="text" value={bio} onChange={(e) => setBio(e.target.value)} placeholder="About me" />
+                <button type="submit">Update profile</button>
+              </form>
+            :
+              <p>{data.data().bio}</p>
+            }
           </div>
 
           <h2>User post</h2>
