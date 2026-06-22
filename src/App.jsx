@@ -17,14 +17,17 @@ function App() {
   return (
     <BrowserRouter>
       <>
-        <nav className='test-gap'>
-          <NavLink to="/" end>Home</NavLink>
-          <NavLink to="/contact" end>Contact</NavLink>
-          {!user && <NavLink to="/register" end>Register</NavLink>}
-          {user && <NavLink to="/createPost" end>CreatePost</NavLink>}
-          {user && <NavLink to={{pathname: "/user", search: `id=${user.uid}`,}} end>Profile</NavLink>}
-          <NavLink to="/login" end>{user ? "Logout" : "Login"}</NavLink>
-        </nav>
+        <header>
+          <nav className='test-gap'>
+            <NavLink to="/" end>Home</NavLink>
+            <NavLink to="/contact" end>Contact</NavLink>
+            {!user && <NavLink to="/register" end>Register</NavLink>}
+            {user && <NavLink to="/createPost" end>CreatePost</NavLink>}
+            {user && <NavLink to={{pathname: "/user", search: `id=${user.uid}`,}} end>Profile</NavLink>}
+            <NavLink to="/login" end>{user ? "Logout" : "Login"}</NavLink>
+          </nav>
+          
+        </header>
 
         <Routes>
           <Route path="*" element={<NotFound/>}/>
