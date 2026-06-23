@@ -315,6 +315,7 @@ function CreatePost(){
         }
         return(
             <>
+                <h2>Create a post</h2>
                 <form onSubmit={CreatePost}>
                     <input type="text" onChange={(e) => setTitle(e.target.value)} placeholder="Title" required/>
                     <input type="file" accept="image/*,video/*,audio/*,.glb,.gltf" onChange={(e) => setFiles(e.target.files[0])}/>
