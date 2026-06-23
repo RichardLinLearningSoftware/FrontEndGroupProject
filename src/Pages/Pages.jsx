@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, onAuthStateChanged, signOut, signInWithPopup } from "firebase/auth";
 import { BrowserRouter,  Route, Routes, NavLink, useSearchParams, redirect, useNavigate } from 'react-router';
-import { onAuthStateChanged, signOut  } from "firebase/auth";
 import { GetAllData, GetSingleData, GetUserProfile, FindPost, FindUser, FindComment } from './Content.jsx';
 import { collection, doc, getDoc, getDocs, getFirestore, where, addDoc, deleteDoc, updateDoc, setDoc } from "firebase/firestore";
-import { auth, db } from "../firebase.js";
+import { auth, db, googleProvider } from "../firebase.js";
 import { supabase } from '../supabase.js';
 
 function NotFound(){
@@ -102,6 +101,26 @@ function Register(){
         });
     }, []);
 
+    async function registerWithGoogle() {
+        try {
+            const result = await signInWithPopup(auth, googleProvider);
+            const userRef = doc(db, "Users", result.user.uid);
+            const userSnap = await getDoc(userRef);
+
+            if (!userSnap.exists()) {
+                await setDoc(userRef, {
+                    name: result.user.displayName,
+                    bio: "Hello i'm " + result.user.displayName,
+                    isPrivate: false,
+                });
+            }
+            navigate("/");
+        } catch (error) {
+            console.error(error);
+            setError(error.message);
+        }
+    }
+
     async function RegisterUser(e) {
         e.preventDefault();
         if(password.length >= 6 && username.length >= 3){
@@ -147,6 +166,7 @@ function Register(){
                     <input type="password" onChange={(e) => setPassword(e.target.value)} placeholder="password"/>
                     <h3>{error}</h3>
                     <button type="submit">Submit</button>
+                    <button type="button" onClick={registerWithGoogle}>Create acount with Google</button>
                 </form>
             </>
         );
@@ -172,6 +192,17 @@ function Login(){
             setUser(authUser);
         });
     }, []);
+
+    async function loginWithGoogle() {
+        try {
+            const result = await signInWithPopup(auth, googleProvider);
+            console.log(result.user);
+            navigate("/");
+        } catch (error) {
+            console.error(error);
+            setError(error.message);
+        }
+    }
 
     async function LoginUser(e) {
         e.preventDefault();
@@ -207,6 +238,7 @@ function Login(){
                     <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="password"/>
                     <h3>{error}</h3>
                     <button type="submit">Submit</button>
+                    <button type="button" onClick={loginWithGoogle}>Login with Google</button>
                 </form>
             }
         </>
