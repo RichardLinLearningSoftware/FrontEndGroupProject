@@ -239,6 +239,7 @@ function GetUserProfile({ userId }) {
       </>
     )
   }
+  const [refresh, setRefresh] = useState(0);
   const [userExits, setUserExits] = useState(false);
   const [bio, setBio] = useState("");
   const [user, setUser] = useState(null);
@@ -257,13 +258,20 @@ function GetUserProfile({ userId }) {
       }
     }
     fetchData();
-  }, [userId]);
+  }, [userId, refresh]);
 
-  async function UpdateProfile(e) {
+  async function UpdateBio(e) {
     e.preventDefault();
     await updateDoc(doc(db, "Users", userId), {
       bio: bio
     });
+  }
+
+  async function UpdatePrivacy(privacyValue) {
+    await updateDoc(doc(db, "Users", userId), {
+      isPrivate: privacyValue
+    });
+    setRefresh(refresh + 1);
   }
 
   if (data && userExits) {
@@ -274,19 +282,31 @@ function GetUserProfile({ userId }) {
             <h2>{data.data().name || "No name"}</h2>
             <p>{data.id}</p>
             {user.uid == data.id ? 
-              <form onSubmit={UpdateProfile}>
-                <input type="text" value={bio} onChange={(e) => setBio(e.target.value)} placeholder="About me" />
-                <button type="submit">Update profile</button>
-              </form>
+              <>
+                <form onSubmit={UpdateBio}>
+                  <input type="text" value={bio} onChange={(e) => setBio(e.target.value)} placeholder="About me" />
+                  <button type="submit">Update profile</button>
+                </form>
+                {data.data().isPrivate ?
+                  <button onClick={()=> UpdatePrivacy(false)}>Set profile to public</button>
+                :
+                  <button onClick={()=> UpdatePrivacy(true)}>Set profile to private</button>
+                }
+              </>
             :
               <p>{data.data().bio}</p>
             }
-          </div>
-
-          <h2>User post</h2>
-          <div className="flex-row-container">
-            <GetUserSpecificPost userId={userId} />
-            <GetUserSpecificComment userId={userId}/>
+            {data.data().isPrivate == true && user.uid != data.id ?
+              <h2>Profile is private</h2>
+            :
+              <>
+                <h2>User post</h2>
+                <div className="flex-row-container">
+                  <GetUserSpecificPost userId={userId} />
+                  <GetUserSpecificComment userId={userId}/>
+                </div>
+              </>
+            }
           </div>
         </>
       );
@@ -299,11 +319,17 @@ function GetUserProfile({ userId }) {
             <p>{data.data().bio || "No Description"}</p>
           </div>
 
-          <h2>User post</h2>
-          <div className="flex-row-container">
-            <GetUserSpecificPost userId={userId} />
-            <GetUserSpecificComment userId={userId}/>
-          </div>
+          {data.data().isPrivate ?
+            <h2>Profile is private</h2>
+          :
+            <>
+              <h2>User post</h2>
+              <div className="flex-row-container">
+                <GetUserSpecificPost userId={userId} />
+                <GetUserSpecificComment userId={userId}/>
+              </div>
+            </>
+          }
         </>
       );
     }
