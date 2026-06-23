@@ -111,7 +111,8 @@ function Register(){
 
                 await setDoc(doc(db, "Users", userCredential.user.uid), {
                         name: username,
-                        bio: "Hello i'm " + username
+                        bio: "Hello i'm " + username,
+                        isPrivate: false,
                 });
                 navigate("/");
             } catch (error) {
