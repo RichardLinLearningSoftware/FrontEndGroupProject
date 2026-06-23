@@ -196,7 +196,15 @@ function Login(){
     async function loginWithGoogle() {
         try {
             const result = await signInWithPopup(auth, googleProvider);
-            console.log(result.user);
+            const userRef = doc(db, "Users", result.user.uid);
+            const userSnap = await getDoc(userRef);
+            if (!userSnap.exists()) {
+                await setDoc(userRef, {
+                    name: result.user.displayName,
+                    bio: "Hello i'm " + result.user.displayName,
+                    isPrivate: false,
+                });
+            }
             navigate("/");
         } catch (error) {
             console.error(error);
