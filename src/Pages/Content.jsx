@@ -64,12 +64,12 @@ function GetAllData() {
     <>
       {docs.map(doc =>
         <div className="post" key={doc.id}>
-          <NavLink to={{ pathname: "/post", search: `id=${doc.id}`, }}>
-            <h2>title: {doc.data().title}</h2>
-            <p>id: {doc.id}</p>
-            <p>user: {doc.data().user}</p>
-            <p>uid: {doc.data().uid}</p>
-            <p>desc: {doc.data().description}</p>
+          <NavLink className = 'link'to={{ pathname: "/post", search: `id=${doc.id}`, }}>
+            <h2 className = 'link'>title: {doc.data().title}</h2>
+            <p className = 'link'>id: {doc.id}</p>
+            <p className = 'link'>user: {doc.data().user}</p>
+            <p className = 'link'>uid: {doc.data().uid}</p>
+            <p className = 'link'>desc: {doc.data().description}</p>
           </NavLink>
           <RenderMedia media={doc.data()} />
         </div>
@@ -271,19 +271,19 @@ function GetUserProfile({ userId }) {
       return (
         <>
           <div>
-            <h2>{data.data().name || "No name"}</h2>
-            <p>{data.id}</p>
+            <h2 className = 'title'>{data.data().name || "No name"}</h2>
+            <p className = 'text-contact'>{data.id}</p>
             {user.uid == data.id ? 
               <form onSubmit={UpdateProfile}>
                 <input type="text" value={bio} onChange={(e) => setBio(e.target.value)} placeholder="About me" />
                 <button type="submit">Update profile</button>
               </form>
             :
-              <p>{data.data().bio}</p>
+              <p className = 'text-contact'>{data.data().bio}</p>
             }
           </div>
 
-          <h2>User post</h2>
+          <h2 className = 'title'>User post</h2>
           <div className="flex-row-container">
             <GetUserSpecificPost userId={userId} />
             <GetUserSpecificComment userId={userId}/>
@@ -339,12 +339,12 @@ function GetUserSpecificPost({ userId }) {
       <div>
         {docs.filter(doc => doc.data().uid == userId).map(doc =>
           <div className="test-container" key={doc.id}>
-            <NavLink to={{ pathname: "/post", search: `id=${doc.id}` }}>
-              <h2>title: {doc.data().title}</h2>
-              <p>id: {doc.id}</p>
-              <p>user: {doc.data().user}</p>
-              <p>uid: {doc.data().uid}</p>
-              <p>desc: {doc.data().description}</p>
+            <NavLink className = 'link' to={{ pathname: "/post", search: `id=${doc.id}` }}>
+              <h2 className = 'title'>title: {doc.data().title}</h2>
+              <p className = 'link'>id: {doc.id}</p>
+              <p className = 'link'>user: {doc.data().user}</p>
+              <p className = 'link'>uid: {doc.data().uid}</p>
+              <p className = 'link'>desc: {doc.data().description}</p>
             </NavLink>
             <RenderMedia media={doc.data()} />
           </div>
@@ -368,7 +368,7 @@ function GetUserSpecificComment({ userId }) {
     return (
       <>
         <div className="comment-container">
-          <h2>User havent commented anything</h2>
+          <h2 className = 'text-contact'>User havent commented anything</h2>
         </div>
       </>
     )
@@ -378,8 +378,8 @@ function GetUserSpecificComment({ userId }) {
       <div>
         {docs.filter(doc => doc.data().uid == userId).map(doc =>
           <div className="comment-container" key={doc.id}>
-            <NavLink to={{ pathname: "/post", search: `id=${doc.data().postId}` }}>{doc.data().postId}</NavLink>
-            <p>{doc.data().comment}</p>
+            <NavLink className = 'link' to={{ pathname: "/post", search: `id=${doc.data().postId}` }}>{doc.data().postId}</NavLink>
+            <p className = 'link'>{doc.data().comment}</p>
             <RenderMedia media={doc.data()} />
           </div>
         )}

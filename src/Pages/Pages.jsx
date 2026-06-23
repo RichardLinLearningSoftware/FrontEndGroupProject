@@ -21,7 +21,7 @@ function NotFound(){
 function HomePage(){
     return(
         <>
-            <h2>Home page</h2>
+            <h2 className = 'title'>Home page</h2>
             <div className='postContainer'>
                 <GetAllData/>
             </div>
@@ -32,8 +32,9 @@ function HomePage(){
 function ContactPage(){
     return(
         <>
-            <h2>Contact page</h2>
-            <p>Lorem ipsum or somthing</p>
+            <h2 className = 'title'>Contact page</h2>
+            <p className = 'text-contact'>Phone Number: +31 06 12345678</p>
+            <p className = 'text-contact'>Email: JoeyRichard@gmail.com</p>
         </>
     );
 }
@@ -125,7 +126,7 @@ function Register(){
     if(!user){
         return (
             <>
-                <h2>Register</h2>
+                <h2 className = 'title'>Register</h2>
                 <form onSubmit={RegisterUser}>
                     <input type="text" onChange={(e) => setEmail(e.target.value)} placeholder="email"/>
                     <input type="text" onChange={(e) => setUsername(e.target.value)} placeholder="username"/>
@@ -138,8 +139,8 @@ function Register(){
     }else{
         return (
             <>
-                <h2>You are already logged in</h2>
-                <p>Log out to create a acount</p>
+                <h2 className = 'title'>You are already logged in</h2>
+                <p className = 'link'>Log out to create a acount</p>
             </>
         );
     }
@@ -183,7 +184,7 @@ function Login(){
     
     return (
         <>
-            <h2>{user ? "Logout" : "Login"}</h2>
+            <h2 className = 'title'>{user ? "Logout" : "Login"}</h2>
             {user ?
                 <button onClick={()=>signOut(auth)}>Logout</button>
             :
